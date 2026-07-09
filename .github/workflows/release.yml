@@ -1,10 +1,14 @@
 name: Release
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
   contents: write
+  id-token: write
   pull-requests: write
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
@@ -39,4 +43,3 @@ jobs:
           publish: bun run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
