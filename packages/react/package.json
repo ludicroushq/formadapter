@@ -1,0 +1,50 @@
+{
+  "name": "@formadapter/react",
+  "version": "0.0.0",
+  "description": "Automatic React schema forms for any UI kit.",
+  "keywords": [
+    "forms",
+    "schema",
+    "ui",
+    "react",
+    "typescript"
+  ],
+  "homepage": "https://formadapter.com",
+  "bugs": {
+    "url": "https://github.com/ludicroushq/formadapter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ludicroushq/formadapter.git",
+    "directory": "packages/react"
+  },
+  "license": "MIT",
+  "author": "ludicrous",
+  "type": "module",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo .turbo",
+    "dev": "tsdown --watch",
+    "test": "bun test",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@formadapter/repo",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@1.3.14",
+  "engines": {
+    "bun": ">=1.3.8"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "changeset": "changeset",
+    "clean": "turbo run clean && rm -rf node_modules bun.lock .turbo",
+    "dev": "turbo run dev --parallel",
+    "release": "bun run build && changeset publish",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "version": "changeset version && bun install"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.7",
+    "@types/node": "^24.10.1",
+    "tsdown": "^0.21.7",
+    "turbo": "^2.8.21",
+    "typescript": "^6.0.2"
+  }
+}
