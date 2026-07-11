@@ -48,6 +48,7 @@
     "@orpc/client": ">=1.14.0 <2.0.0"
   },
   "devDependencies": {
+    "@formadapter/react": "^0.0.0",
     "@orpc/client": "1.14.7",
     "@orpc/server": "1.14.7"
   },
