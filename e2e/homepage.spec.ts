@@ -54,4 +54,25 @@ test("the hero responds, validates with prefixed styles, and returns typed outpu
   await expect(serverError).toBeVisible();
   await expect(serverError).toHaveClass(/\btext-error\b/u);
   await expect(serverError).not.toHaveClass(/\btext-success\b/u);
+
+  const errorSummary = page.locator(".server-form-demo [role=alert]", {
+    hasText: "Please fix the highlighted fields",
+  });
+  const summaryLink = errorSummary.getByRole("button", {
+    name: "Already registered",
+  });
+  await expect(summaryLink).toBeVisible();
+  await expect(summaryLink).toHaveClass(/\bfa-link\b/u);
+  await expect(summaryLink).not.toHaveClass(/\bfa-link-error\b/u);
+  const summaryColors = await summaryLink.evaluate((element) => {
+    const alert = element.closest<HTMLElement>("[role=alert]");
+    if (!alert) throw new Error("Error summary alert was not found");
+    return {
+      alertBackground: getComputedStyle(alert).backgroundColor,
+      alertColor: getComputedStyle(alert).color,
+      linkColor: getComputedStyle(element).color,
+    };
+  });
+  expect(summaryColors.linkColor).toBe(summaryColors.alertColor);
+  expect(summaryColors.linkColor).not.toBe(summaryColors.alertBackground);
 });

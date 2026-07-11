@@ -11,7 +11,7 @@ export function ErrorSummary({
   title,
 }: ErrorSummarySlotProps): ReactNode {
   const alertClassName = useDaisyUIClassNames("alert alert-error");
-  const linkClassName = useDaisyUIClassNames("link link-error");
+  const linkClassName = useDaisyUIClassNames("link");
   const resolvedItems: NonNullable<ErrorSummarySlotProps["items"]> =
     items ?? errors.map((message) => ({ message }));
 

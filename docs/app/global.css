@@ -2,7 +2,7 @@
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
 @source "../../packages/daisyui/src";
-@source inline("fa-{alert,alert-error,alert-success,btn,btn-primary,fieldset,fieldset-legend,input,input-error,label,link,link-error,loading,loading-spinner,loading-xs,radio,radio-error}");
+@source inline("fa-{alert,alert-error,alert-success,btn,btn-primary,fieldset,fieldset-legend,input,input-error,label,link,loading,loading-spinner,loading-xs,radio,radio-error}");
 
 @plugin "daisyui" {
   themes: light;

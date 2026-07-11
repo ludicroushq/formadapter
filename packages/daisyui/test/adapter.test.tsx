@@ -1099,7 +1099,10 @@ describe("DaisyUI slots", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Enter a name" }));
+    const fieldErrorLink = screen.getByRole("button", { name: "Enter a name" });
+    expect(fieldErrorLink).toHaveClass("link");
+    expect(fieldErrorLink).not.toHaveClass("link-error");
+    fireEvent.click(fieldErrorLink);
     expect(onSelect).toHaveBeenCalledWith("profile.name");
     expect(screen.getByText("Try again later")).not.toHaveRole("button");
   });
@@ -1184,6 +1187,12 @@ describe("DaisyUI adapter", () => {
         >
           Wizard contents
         </Wizard>
+        <ErrorSummary
+          errors={["Prefixed summary error"]}
+          items={[{ focusPath: "profile.name", message: "Prefixed summary error" }]}
+          onSelect={() => undefined}
+          title="Prefixed summary"
+        />
       </DaisyUIProvider>,
     );
 
@@ -1202,6 +1211,11 @@ describe("DaisyUI adapter", () => {
       "input-lg",
     );
     expect(screen.getByLabelText("Nested input")).not.toHaveClass("fa-input");
+    const prefixedSummaryLink = screen.getByRole("button", {
+      name: "Prefixed summary error",
+    });
+    expect(prefixedSummaryLink).toHaveClass("fa-link");
+    expect(prefixedSummaryLink).not.toHaveClass("fa-link-error", "link");
     expect(screen.getByText("Prefixed field error")).toHaveClass(
       "fa-label",
       "text-error",
