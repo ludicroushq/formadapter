@@ -16,6 +16,7 @@
     "@formadapter/html": "workspace:*",
     "@formadapter/nextjs": "workspace:*",
     "@formadapter/react": "workspace:*",
+    "@formadapter/shadcn": "workspace:*",
     "@swc/helpers": "0.5.15",
     "arktype": "2.2.3",
     "daisyui": "5.6.16",

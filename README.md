@@ -92,7 +92,8 @@ Adapter resolution is deterministic:
 1. A complete `adapter` passed to one form.
 2. The nearest `FormAdapterProvider`.
 3. The adapter bound by an adapter-specific factory such as
-   `@formadapter/html` or `@formadapter/daisyui`'s `createForm`.
+   `@formadapter/html`, `@formadapter/daisyui`, or
+   `@formadapter/shadcn`'s `createForm`.
 
 A child provider replaces its parent adapter for that subtree; adapters are
 never implicitly merged across scopes. Build an intentional partial variation
@@ -356,6 +357,7 @@ for ordinary browser submission where possible.
 | `@formadapter/react` | Typed React state, schema-bound components/hooks, provider scopes, renderer, drafts, wizards, and adapter contract |
 | `@formadapter/html` | Accessible, unstyled native HTML adapter and custom-design-system foundation |
 | `@formadapter/daisyui` | Complete DaisyUI 5 adapter using accessible native HTML controls |
+| `@formadapter/shadcn` | Complete shadcn/ui-styled adapter using accessible native HTML controls |
 | `@formadapter/server` | Schema-aware FormData/JSON validation, business errors, reusable submissions, Server Actions, and Request handlers |
 | `@formadapter/nextjs` | Next.js-focused aliases for native React Server Actions |
 | `@formadapter/tanstack-start` | TanStack Start client hook and server-function boundary helpers |
@@ -400,6 +402,25 @@ The adapter uses plain HTML elements and DaisyUI classes; it does not add a
 React component-wrapper dependency. The package also exports an adapter-bound
 `createForm` for isolated forms that do not use a provider.
 
+## shadcn/ui setup
+
+Use the theme created by `shadcn init` and import the adapter's Tailwind source
+file:
+
+```sh
+bun add @formadapter/react @formadapter/shadcn zod
+```
+
+```css
+@import "tailwindcss";
+@import "@formadapter/shadcn";
+```
+
+`ShadcnProvider` applies the adapter once for a subtree. The adapter uses the
+application's existing shadcn/ui semantic tokens without copying or replacing
+anything in `components/ui`. An adapter-bound `createForm` is also exported for
+isolated forms.
+
 ## Current boundaries
 
 Automatic layout expects an object at the schema root. Nested objects,
@@ -428,8 +449,8 @@ new React `key`.
 The [Next.js examples](./examples/kitchen-sink) are intentionally bare-bones.
 The index is only a list, and every example route contains one heading and one
 form so the source stays easy to copy. The examples cover Zod, ArkType, arrays,
-files, native HTML, the provider-first API, a wizard with draft and async
-validation, and a native Next.js Server Action.
+files, native HTML, DaisyUI, shadcn/ui, the provider-first API, a wizard with
+draft and async validation, and a native Next.js Server Action.
 
 ```sh
 bun install

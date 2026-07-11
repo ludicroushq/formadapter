@@ -1,0 +1,75 @@
+{
+  "name": "@formadapter/shadcn",
+  "version": "0.0.0",
+  "description": "Native shadcn/ui renderer for FormAdapter.",
+  "keywords": [
+    "forms",
+    "react",
+    "schema",
+    "shadcn",
+    "tailwindcss",
+    "typescript"
+  ],
+  "homepage": "https://formadapter.com",
+  "bugs": {
+    "url": "https://github.com/ludicroushq/formadapter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ludicroushq/formadapter.git",
+    "directory": "packages/shadcn"
+  },
+  "license": "MIT",
+  "author": "ludicrous",
+  "type": "module",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "tailwind.css",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "style": "./tailwind.css",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "style": "./tailwind.css",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@formadapter/core": "^0.0.0",
+    "@formadapter/html": "^0.0.0",
+    "@formadapter/react": "^0.0.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.6.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "tailwindcss": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "tailwindcss": "4.3.2",
+    "zod": "4.4.3"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo .turbo",
+    "dev": "tsdown --watch",
+    "test": "vitest run --config vitest.config.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  }
+}

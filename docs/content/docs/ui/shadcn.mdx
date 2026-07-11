@@ -1,0 +1,55 @@
+---
+title: shadcn/ui
+description: Render complete forms with the Tailwind tokens already in your shadcn/ui app.
+icon: Component
+---
+
+`@formadapter/shadcn` renders accessible native controls with shadcn/ui styling. It uses your theme tokens without copying or replacing anything in `components/ui`.
+
+## Install and scan
+
+If shadcn/ui is not configured yet, initialize it first:
+
+```sh
+bunx shadcn@latest init -d
+bun add @formadapter/react @formadapter/shadcn zod
+```
+
+Import the adapter's Tailwind source file. Keep the theme variables created by shadcn/ui.
+
+```css title="app/globals.css"
+@import "tailwindcss";
+@import "@formadapter/shadcn";
+```
+
+## Provide it once
+
+```tsx title="app/providers.tsx"
+"use client";
+
+import { ShadcnProvider } from "@formadapter/shadcn";
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return <ShadcnProvider>{children}</ShadcnProvider>;
+}
+```
+
+Forms created with `createForm` from `@formadapter/react` now use the nearest shadcn/ui provider.
+
+## Use it without a provider
+
+The package also exports an adapter-bound factory for isolated forms:
+
+```tsx
+import { createForm } from "@formadapter/shadcn";
+import { z } from "zod";
+
+const Feedback = createForm(z.object({
+  email: z.email(),
+  message: z.string().min(20),
+})).configure({
+  fields: { message: { control: "textarea" } },
+});
+```
+
+The adapter includes every built-in control and visible slot, including arrays, wizards, messages, and error summaries. To replace selected pieces or register typed custom controls, extend `shadcnAdapter` and provide the resulting complete adapter.

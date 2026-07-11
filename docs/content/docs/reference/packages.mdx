@@ -12,6 +12,7 @@ FormAdapter is split by responsibility so the compiler, React runtime, UI, and s
 | `@formadapter/react` | Schema-bound components, state, renderer, provider scopes, adapter contract, drafts, arrays, and wizards |
 | `@formadapter/html` | Accessible, unstyled native HTML adapter and provider |
 | `@formadapter/daisyui` | Complete DaisyUI 5 adapter and provider |
+| `@formadapter/shadcn` | Complete shadcn/ui-styled adapter and provider |
 | `@formadapter/server` | Schema-aware FormData/JSON validation, business errors, reusable submissions, actions, and request handlers |
 | `@formadapter/nextjs` | Next.js-focused aliases for native React 19 Server Actions |
 | `@formadapter/tanstack-start` | TanStack Start client hook and server-function helpers |
@@ -24,6 +25,12 @@ Client form with DaisyUI:
 
 ```sh
 bun add @formadapter/react @formadapter/daisyui zod daisyui
+```
+
+Client form with shadcn/ui:
+
+```sh
+bun add @formadapter/react @formadapter/shadcn zod
 ```
 
 Unstyled native HTML form:
