@@ -1,0 +1,57 @@
+---
+title: DaisyUI
+description: Use the complete DaisyUI 5 adapter with one small provider boundary.
+icon: Flower2
+---
+
+`@formadapter/daisyui` renders accessible native controls with DaisyUI 5 classes. It has no component-wrapper dependency.
+
+## Install and scan
+
+```sh
+bun add @formadapter/react @formadapter/daisyui daisyui
+```
+
+```css title="app/globals.css"
+@import "tailwindcss";
+@source "../node_modules/@formadapter/daisyui/dist";
+@plugin "daisyui";
+```
+
+For a workspace package, point `@source` at the adapter's source or built output from that stylesheet's location.
+
+## Provide it once
+
+```tsx title="app/providers.tsx"
+"use client";
+
+import { DaisyUIProvider } from "@formadapter/daisyui";
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return <DaisyUIProvider>{children}</DaisyUIProvider>;
+}
+```
+
+Forms created with `createForm` from `@formadapter/react` resolve the nearest provider automatically.
+
+The adapter includes input, textarea, select, radio, checkbox, and file controls plus form, field, group, array, array-item, button, wizard, message, error-summary, and unsupported-schema slots. Native disabled, read-only, required, invalid, pending, and validating states are preserved.
+
+## Use it without a provider
+
+For an isolated form, import the adapter-bound factory:
+
+```tsx
+import { createForm } from "@formadapter/daisyui";
+import { z } from "zod";
+
+const Feedback = createForm(z.object({
+  email: z.email(),
+  message: z.string().min(20),
+})).configure({
+  fields: { message: { control: "textarea" } },
+});
+```
+
+Provider-first forms are usually easier to restyle later. The bound factory is useful for packages, embedded widgets, and tests that should not depend on application context.
+
+To replace a few DaisyUI pieces while keeping the rest, use [adapter scopes and extension](/docs/ui/adapters).

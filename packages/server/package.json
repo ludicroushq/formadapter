@@ -1,0 +1,60 @@
+{
+  "name": "@formadapter/server",
+  "version": "0.0.0",
+  "description": "Framework-neutral parsing, validation, and submission transports for FormAdapter.",
+  "keywords": [
+    "forms",
+    "server-actions",
+    "schema",
+    "standard-schema",
+    "typescript"
+  ],
+  "homepage": "https://formadapter.com",
+  "bugs": {
+    "url": "https://github.com/ludicroushq/formadapter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ludicroushq/formadapter.git",
+    "directory": "packages/server"
+  },
+  "license": "MIT",
+  "author": "ludicrous",
+  "type": "module",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@formadapter/core": "^0.0.0"
+  },
+  "devDependencies": {
+    "arktype": "^2.2.3",
+    "zod": "^4.4.3"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo .turbo",
+    "dev": "tsdown --watch",
+    "test": "vitest run --config vitest.config.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage",
+    "test:typecheck": "tsc --project tsconfig.test.json --noEmit",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  }
+}

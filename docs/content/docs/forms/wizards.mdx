@@ -1,0 +1,70 @@
+---
+title: Multi-step forms
+description: Split one schema into typed steps with validation and error routing included.
+icon: ListChecks
+---
+
+`Wizard` uses the same schema, configuration, submission state, and adapter as `Form`. A step advances only after its fields validate.
+
+```tsx title="onboarding-wizard.tsx"
+const Onboarding = createForm(z.object({
+  email: z.email(),
+  accountType: z.enum(["personal", "company"]),
+  company: z.string().trim().min(2).optional(),
+  plan: z.enum(["starter", "growth"]),
+})).configure({
+  fields: {
+    company: {
+      hidden: (values) => values.accountType !== "company",
+      requiredWhenVisible: (values) => values.accountType === "company",
+    },
+  },
+});
+
+export function OnboardingWizard() {
+  return (
+    <Onboarding.Wizard
+      action={saveOnboarding}
+      includeRemaining={false}
+      nextLabel="Continue"
+      previousLabel="Back"
+      submitLabel="Finish"
+    >
+      <Onboarding.Step title="Your account">
+        <Onboarding.Field name="email" />
+        <Onboarding.Field name="accountType" />
+      </Onboarding.Step>
+
+      <Onboarding.Step
+        id="company"
+        title="Company"
+        when={(values) => values.accountType === "company"}
+      >
+        <Onboarding.Field name="company" />
+      </Onboarding.Step>
+
+      <Onboarding.Step title="Choose a plan">
+        <Onboarding.Field name="plan" />
+      </Onboarding.Step>
+    </Onboarding.Wizard>
+  );
+}
+```
+
+Each step infers ownership from its `Field`, `Fields`, and `When` descendants through fragments and native layout markup. Use `fields={["plan"]}` to add paths rendered inside an opaque custom component. Use `fields={[]}` for a content-only step.
+
+Custom React components, including layout wrappers, are opaque by design. Paths added with `fields` validate whenever that step is active, so keep conditional `When` branches in native markup or express the condition in field configuration.
+
+Conditional steps are recalculated from current values. If a step disappears, the wizard keeps the nearest valid active step.
+
+By default, fields not assigned to a step are collected into a final **Remaining fields** step. Set `includeRemaining={false}` only when every field is assigned deliberately. `remainingTitle` changes that generated step's title.
+
+Set `nextLabel` and `previousLabel` on `Wizard` for shared navigation labels, or override either label on an individual `Step`.
+
+## Error routing
+
+Client errors focus the first invalid control in the active step. Server field errors navigate back to the step that owns the path and focus the control there. Custom controls must attach their `controlRef` to a focusable element for this to work.
+
+Each field can belong to only one step. Assign an array by its parent path such as `invites`, not an item template path such as `invites[].email`.
+
+Step `id` values are optional. Give dynamically inserted, removed, or reordered steps an `id` or stable React `key` so the active step keeps its identity.

@@ -1,0 +1,67 @@
+---
+title: Packages
+description: Choose the smallest FormAdapter packages for your runtime and transport.
+icon: PackageOpen
+---
+
+FormAdapter is split by responsibility so the compiler, React runtime, UI, and server boundaries stay independently reusable.
+
+| Package | Responsibility |
+| --- | --- |
+| `@formadapter/core` | Framework-free compilation, paths, defaults, value preparation, validation helpers, and submission state |
+| `@formadapter/react` | Schema-bound components, state, renderer, provider scopes, adapter contract, drafts, arrays, and wizards |
+| `@formadapter/html` | Accessible, unstyled native HTML adapter and provider |
+| `@formadapter/daisyui` | Complete DaisyUI 5 adapter and provider |
+| `@formadapter/server` | Schema-aware FormData/JSON validation, business errors, reusable submissions, actions, and request handlers |
+| `@formadapter/nextjs` | Next.js-focused aliases for native React 19 Server Actions |
+| `@formadapter/tanstack-start` | TanStack Start client hook and server-function helpers |
+| `@formadapter/orpc` | oRPC procedure submissions and structured error mapping |
+| `@formadapter/http` | Fetch-based JSON or multipart submission |
+
+## Common installs
+
+Client form with DaisyUI:
+
+```sh
+bun add @formadapter/react @formadapter/daisyui zod daisyui
+```
+
+Unstyled native HTML form:
+
+```sh
+bun add @formadapter/react @formadapter/html zod
+```
+
+Next.js Server Action:
+
+```sh
+bun add @formadapter/nextjs
+```
+
+TanStack Start server function:
+
+```sh
+bun add @formadapter/tanstack-start @formadapter/server
+```
+
+Regular endpoint:
+
+```sh
+bun add @formadapter/http @formadapter/server
+```
+
+## Dependency direction
+
+```text
+schema
+  ↓
+@formadapter/core
+  ↓
+@formadapter/react
+  ↓
+UI adapter
+```
+
+Transport packages consume prepared input and the shared `SubmissionState`; they do not reach back into the compiler or UI. Custom renderers depend on React and core through the public adapter props, while server-only code can depend on `@formadapter/server` without importing React.
+
+For public exports and lower-level helpers, use each package's generated TypeScript declarations as the API reference. The guides focus on stable workflows instead of duplicating every type member.

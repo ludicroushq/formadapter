@@ -1,0 +1,125 @@
+---
+title: Getting started
+description: Install DaisyUI, set one provider, and render a schema-backed form.
+icon: Rocket
+---
+
+This setup uses Zod and the included DaisyUI adapter. After the provider is mounted, each form usually needs only a schema and the presentation choices the schema cannot express.
+
+## 1. Install
+
+```sh
+bun add @formadapter/react @formadapter/daisyui zod daisyui
+```
+
+Enable DaisyUI and include the adapter package in Tailwind's source scan:
+
+```css title="app/globals.css"
+@import "tailwindcss";
+@source "../node_modules/@formadapter/daisyui/dist";
+@plugin "daisyui";
+```
+
+## 2. Set the adapter once
+
+The provider is a small Client Component. In Next.js, your Server Component layout can render it normally.
+
+```tsx title="app/providers.tsx"
+"use client";
+
+import { DaisyUIProvider } from "@formadapter/daisyui";
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return <DaisyUIProvider>{children}</DaisyUIProvider>;
+}
+```
+
+```tsx title="app/layout.tsx"
+import { Providers } from "./providers";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body><Providers>{children}</Providers></body>
+    </html>
+  );
+}
+```
+
+## 3. Create the form
+
+`configure` is for labels, controls, layout hints, and behavior. Schema rules stay in Zod.
+
+```tsx title="app/contact/contact-form.tsx"
+"use client";
+
+import { createForm } from "@formadapter/react";
+import { z } from "zod";
+
+const contactSchema = z.object({
+  name: z.string().trim().min(2),
+  email: z.email(),
+  message: z.string().trim().min(20).max(1_000),
+  updates: z.boolean().default(true),
+});
+
+const Contact = createForm(contactSchema).configure({
+  fields: {
+    name: { label: "Full name", placeholder: "Ada Lovelace" },
+    email: { label: "Work email", placeholder: "ada@example.com" },
+    message: {
+      control: "textarea",
+      label: "How can we help?",
+      controlProps: { rows: 5 },
+    },
+    updates: { label: "Send me product updates" },
+  },
+});
+
+export function ContactForm() {
+  return (
+    <Contact.Form
+      onSubmit={async (values) => {
+        await saveContact(values);
+        return { status: "success", message: "Message received." };
+      }}
+      submitLabel="Send message"
+    />
+  );
+}
+```
+
+`values` is `z.output<typeof contactSchema>`. The second handler argument contains the prepared schema input, schema-aware `FormData`, and an `AbortSignal` for transport work.
+
+### Using ArkType
+
+The form API is identical. Only the schema changes:
+
+```tsx
+import { type } from "arktype";
+import { createForm } from "@formadapter/react";
+
+const Project = createForm(type({
+  name: "2 <= string <= 60",
+  ownerEmail: "string.email",
+  stage: "'prototype' | 'production'",
+}));
+```
+
+No Zod- or ArkType-specific FormAdapter package is required.
+
+## 4. Choose a submission boundary
+
+The example above uses a client `onSubmit` handler. For a Next.js Server Action, build the action with `createNextAction` and pass it directly:
+
+```tsx
+<Contact.Form action={saveContact} submitLabel="Send message" />
+```
+
+See [Next.js Server Actions](/docs/server/nextjs) for the complete client/server example. TanStack Start, oRPC, and regular HTTP use the same form state and error model.
+
+## What to read next
+
+- [Configure fields](/docs/forms/configuration) for inferred controls and typed behavior.
+- [Compose a layout](/docs/forms/composition) when automatic object order is not enough.
+- [Adapter scopes](/docs/ui/adapters) for nested design systems or local variants.

@@ -1,0 +1,84 @@
+---
+title: Compose a layout
+description: Use the schema-bound component namespace when automatic layout is not enough.
+icon: PanelsTopLeft
+---
+
+Without children, `<Profile.Form />` renders the root object automatically. Add children to control grouping and layout while keeping every field path typed.
+
+```tsx title="profile-editor.tsx"
+"use client";
+
+import { Profile } from "./profile-form";
+
+export function ProfileEditor() {
+  return (
+    <Profile.Form action={saveProfile}>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Profile.Field name="name" />
+        <Profile.Field name="email" />
+      </div>
+
+      <Profile.Field name="accountType" />
+
+      <Profile.When field="accountType" equals="company">
+        <section className="rounded-box border p-4">
+          <h2>Company details</h2>
+          <Profile.Fields names={["company", "taxId"]} />
+        </section>
+      </Profile.When>
+
+      <Profile.Field name="bio" />
+      <Profile.Submit>Save profile</Profile.Submit>
+    </Profile.Form>
+  );
+}
+```
+
+The bound namespace contains:
+
+- `Form` — state, validation, submission, and automatic rendering
+- `Field` — one typed path, with optional render-time options
+- `Fields` — selected fields, or every root field when `names` is omitted
+- `When` — typed equality checks or a full-form predicate
+- `Submit` — the active adapter's submit button
+- `Step` — one compositional wizard step
+- `Wizard` — a multi-step form using the same runtime
+- `useField` — field state bound to this schema
+- `useFormState` — typed values and form operations
+- `useFormModel` — the compiled read-only schema model
+
+## Read form state inside the form
+
+Hooks must run in a descendant of the bound `Form`.
+
+```tsx
+import { useFormState } from "@formadapter/react";
+
+function SaveStatus() {
+  const { draftStatus, isSubmitting } = useFormState();
+  return <p>{isSubmitting ? "Saving…" : `Draft: ${draftStatus}`}</p>;
+}
+
+function NameLength() {
+  const name = Profile.useField("name");
+  return <p>{String(name.value ?? "").length}/60</p>;
+}
+
+<Profile.Form action={saveProfile}>
+  <Profile.Field name="name" />
+  <NameLength />
+  <SaveStatus />
+  <Profile.Submit />
+</Profile.Form>;
+```
+
+`useFormState()` also exposes values, errors, dirty/validation state, validating fields, the latest submission state, `setValue`, `reset`, `draftStatus`, and `clearDraft`.
+
+Advanced composed controls can inspect the compiled model with `Profile.useFormModel()`. The schema-bound hook retains input and custom-control types; the package-level `useFormModel()` is schema-neutral for reusable adapter infrastructure.
+
+Array item paths have two deliberate forms: configuration uses a template such as `invites[].email`, while runtime hooks use a concrete index such as `Invites.useField("invites.0.email")`. Render the parent array with `<Invites.Field name="invites" />`; a standalone field or wizard step cannot own an unindexed item template.
+
+<Callout type="info">
+  `defaultValues` is mount-time state. To load a different record into a mounted form, call `reset(nextValues)` from inside the form or remount it with a new React key.
+</Callout>

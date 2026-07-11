@@ -1,0 +1,145 @@
+---
+title: Custom design systems
+description: Extend accessible HTML foundations with your own typed controls and slots.
+icon: Blocks
+---
+
+FormAdapter owns state and behavior. An adapter owns all visible markup.
+
+The safest path is to extend the unstyled HTML adapter, then replace only the primitives your system owns. Registering a custom control keeps its name typed when forms use a bound factory.
+
+```tsx title="product-adapter.tsx"
+"use client";
+
+import { htmlAdapter } from "@formadapter/html";
+import {
+  createFormFactory,
+  type ControlProps,
+} from "@formadapter/react";
+
+function RatingControl({
+  controlRef,
+  disabled,
+  field,
+  id,
+  inputProps,
+  name,
+  onBlur,
+  onValueChange,
+  readOnly,
+  required,
+  value,
+}: ControlProps) {
+  const rating = typeof value === "number" ? value : 0;
+
+  return (
+    <div
+      {...inputProps}
+      aria-label={field.label}
+      aria-readonly={readOnly || undefined}
+      role="radiogroup"
+    >
+      {[1, 2, 3, 4, 5].map((option) => (
+        <label htmlFor={`${id}-${option}`} key={option}>
+          <input
+            checked={option === rating}
+            disabled={disabled || readOnly}
+            id={`${id}-${option}`}
+            name={name}
+            onBlur={onBlur}
+            onChange={() => {
+              if (!readOnly) onValueChange(option);
+            }}
+            ref={option === 1 ? controlRef : undefined}
+            required={required}
+            type="radio"
+          />
+          {option} star{option === 1 ? "" : "s"}
+        </label>
+      ))}
+    </div>
+  );
+}
+
+export const productAdapter = htmlAdapter.extend({
+  name: "Product UI",
+  controls: {
+    custom: { "product:rating": RatingControl },
+  },
+});
+
+export const createProductForm = createFormFactory(productAdapter);
+```
+
+```tsx
+const Review = createProductForm(reviewSchema).configure({
+  fields: {
+    rating: { control: "product:rating" },
+  },
+});
+```
+
+`controlRef` must reach a focusable element so invalid submissions and wizard error routing can focus the field. Forward `inputProps`, native state, value changes, and blur events rather than creating a second form-state system.
+
+## Replace everything
+
+Use `createAdapter` only when every primitive comes from your design system:
+
+```tsx title="ui/form-adapter.ts"
+import { createAdapter } from "@formadapter/react";
+import {
+  InputControl,
+  TextareaControl,
+  SelectControl,
+  RadioControl,
+  CheckboxControl,
+  FileControl,
+  FormSlot,
+  FieldSlot,
+  GroupSlot,
+  ArraySlot,
+  ArrayItemSlot,
+  ButtonSlot,
+  ErrorSummarySlot,
+  FormMessageSlot,
+  UnsupportedSlot,
+  WizardSlot,
+} from "./form-primitives";
+
+export const productAdapter = createAdapter({
+  name: "Product UI",
+  controls: {
+    input: InputControl,
+    textarea: TextareaControl,
+    select: SelectControl,
+    radio: RadioControl,
+    checkbox: CheckboxControl,
+    file: FileControl,
+    custom: {},
+  },
+  slots: {
+    Form: FormSlot,
+    Field: FieldSlot,
+    Group: GroupSlot,
+    Array: ArraySlot,
+    ArrayItem: ArrayItemSlot,
+    Button: ButtonSlot,
+    ErrorSummary: ErrorSummarySlot,
+    FormMessage: FormMessageSlot,
+    Unsupported: UnsupportedSlot,
+    Wizard: WizardSlot,
+  },
+});
+```
+
+Type each primitive with the matching exported props such as `ControlProps`, `FieldSlotProps`, or `ButtonSlotProps`. That makes missing accessibility and runtime state visible during implementation.
+
+## Adapter checklist
+
+- Connect labels, descriptions, and errors using the supplied IDs and ARIA props.
+- Render `Field`, `Group`, and `Array` errors inline with their supplied `errorId`; aggregate object and array errors must not exist only in the summary.
+- Reflect disabled, read-only, required, invalid, pending, and validating state.
+- Attach `controlRef` to the interactive element.
+- Keep repeated array actions distinguishable by forwarding `ariaLabel` in `ButtonSlotProps`.
+- Render `Unsupported` visibly in development and production; it protects users from silently incomplete forms.
+- Keep controls value-oriented. FormAdapter owns registration, parsing, and validation.

@@ -1,0 +1,50 @@
+---
+title: Introduction
+description: Schema-native React forms rendered through your design system.
+icon: Braces
+---
+
+FormAdapter turns a schema into a typed React form without turning the schema into a second configuration language.
+
+It reads structure through [Standard JSON Schema](https://standardschema.dev/json-schema), validates with the original [Standard Schema](https://standardschema.dev), and delegates every visible element to a UI adapter. Zod 4 and ArkType 2 work today. Accessible native HTML and DaisyUI 5 adapters are included; custom systems can extend the same complete base.
+
+```text
+Zod or ArkType → form model → React runtime → HTML, DaisyUI, or your adapter
+```
+
+## What stays where
+
+- **Your schema** owns the data contract, validation, refinements, and transforms.
+- **FormAdapter** owns form state, traversal, conditional behavior, accessibility wiring, arrays, drafts, wizards, and submission state.
+- **Your adapter** owns controls, layout, messages, buttons, and styling.
+
+That separation keeps ordinary form code small without making complex forms a dead end.
+
+<Cards>
+  <Card title="Build your first form" description="Provider, schema, configuration, and submission." href="/docs/getting-started" />
+  <Card title="Compose a layout" description="Use typed Field, When, Submit, and hooks." href="/docs/forms/composition" />
+  <Card title="Connect the server" description="Next.js, TanStack Start, oRPC, or HTTP." href="/docs/server/submissions" />
+  <Card title="Bring your UI" description="Extend accessible HTML defaults with your design system." href="/docs/ui/custom-design-systems" />
+</Cards>
+
+## What is included
+
+- Provider-scoped adapters with nearest-provider replacement
+- Complete unstyled HTML and DaisyUI adapters
+- Typed field paths, predicates, option values, and async validators
+- Automatic and composed layouts
+- Conditional fields and conditional requiredness
+- Multi-step forms with step validation and error routing
+- Homogeneous arrays, files, and draft persistence
+- Native React 19 Server Actions and transport helpers
+- One serializable error shape across client and server
+
+## What FormAdapter does not do
+
+FormAdapter is not a page builder and does not invent an application data model. It also does not use OpenAPI as an intermediate format. OpenAPI is useful for network APIs; Standard Schema and Standard JSON Schema preserve the form contract more directly.
+
+Unsupported schema structures render an explicit adapter-owned diagnostic instead of a partial or misleading form. See [schema support](/docs/reference/schema-support) before modeling tuples, records, recursive types, or broad unions.
+
+<Callout type="info" title="Project status">
+  FormAdapter is MIT licensed and currently pre-alpha. Package APIs are designed, tested, and documented, but releases may still change before 1.0.
+</Callout>

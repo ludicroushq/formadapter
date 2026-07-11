@@ -27,14 +27,37 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Lint
+        run: bun run lint
+
       - name: Typecheck
         run: bun run typecheck
 
-      - name: Test
-        run: bun run test
-
       - name: Build
         run: bun run build
+
+      - name: Verify package artifacts
+        run: bun tooling/package-artifacts.ts
+
+      - name: Test with coverage
+        run: bun run test:coverage
+
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Test in Chromium
+        run: bun run test:e2e
+
+      - name: Upload browser failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          if-no-files-found: ignore
+          name: playwright-release-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
 
       - name: Create release pull request or publish
         uses: changesets/action@v1
@@ -43,3 +66,5 @@ jobs:
           publish: bun run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: "true"
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

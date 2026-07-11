@@ -1,0 +1,88 @@
+---
+title: Next.js Server Actions
+description: Use the native React 19 action contract with typed data and inline server errors.
+icon: Triangle
+---
+
+`@formadapter/nextjs` exposes a native `(previousState, FormData)` Server Action. `<Form action={...}>` integrates it with React 19 `useActionState`.
+
+```sh
+bun add @formadapter/react @formadapter/core @formadapter/nextjs zod
+```
+
+## Share the schema and presentation rules
+
+```ts title="app/profile/profile-schema.ts"
+import type { FormConfig } from "@formadapter/core";
+import { z } from "zod";
+
+export const profileSchema = z.object({
+  email: z.email(),
+  accountType: z.enum(["personal", "company"]),
+  company: z.string().trim().min(2).optional(),
+});
+
+export const profileConfig = {
+  fields: {
+    email: { label: "Work email" },
+    accountType: { control: "radio", label: "Account type" },
+    company: {
+      hidden: (values) => values.accountType !== "company",
+      requiredWhenVisible: (values) => values.accountType === "company",
+    },
+  },
+} satisfies FormConfig<z.input<typeof profileSchema>>;
+```
+
+## Create the action
+
+```ts title="app/profile/actions.ts"
+"use server";
+
+import { createNextAction, fieldError } from "@formadapter/nextjs";
+import { profileConfig, profileSchema } from "./profile-schema";
+
+export const saveProfile = createNextAction(
+  profileSchema,
+  async (profile) => {
+    if (await database.user.exists({ email: profile.email })) {
+      throw fieldError("email", "That email is already registered");
+    }
+
+    return database.profile.upsert({ data: profile });
+  },
+  { config: profileConfig },
+);
+```
+
+## Render the client form
+
+```tsx title="app/profile/profile-form.tsx"
+"use client";
+
+import { createForm } from "@formadapter/react";
+import { saveProfile } from "./actions";
+import { profileConfig, profileSchema } from "./profile-schema";
+
+const Profile = createForm(profileSchema, profileConfig);
+
+export function ProfileForm() {
+  return (
+    <Profile.Form
+      action={saveProfile}
+      onResult={(result) => {
+        if (result.status === "success") closeEditor();
+      }}
+      submitLabel="Save profile"
+    />
+  );
+}
+```
+
+The form disables pending submission, renders structured messages, and places `fieldError("email", ...)` beside the email field. Successful action data stays typed through `onResult` and `initialSubmissionState`.
+
+`createNextAction` is a Next-focused alias of `createServerAction` from `@formadapter/server`. The package also re-exports reusable submissions, FormData parsing, server-action adapters, and error helpers. Import request handlers from `@formadapter/server`.
+
+<Callout type="warn">
+  Passing `profileConfig` to the action enforces conditional pruning and requiredness. It does not replace authorization checks; never trust browser inputs or hidden fields for identity or ownership.
+</Callout>

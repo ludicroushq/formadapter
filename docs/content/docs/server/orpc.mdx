@@ -1,0 +1,73 @@
+---
+title: oRPC
+description: Submit typed schema input to oRPC procedures and map structured errors back to fields.
+icon: Network
+---
+
+`createORPCSubmission` adapts a normal oRPC client procedure to a FormAdapter `onSubmit` handler.
+
+```sh
+bun add @formadapter/orpc @orpc/client
+```
+
+```tsx title="account-editor.tsx"
+import { createORPCSubmission } from "@formadapter/orpc";
+import { orpc } from "@/lib/orpc";
+
+const submit = createORPCSubmission(orpc.account.update);
+
+export function AccountEditor() {
+  return <Account.Form onSubmit={submit} />;
+}
+```
+
+By default it sends `SubmitContext.input`, not the transformed output passed as the handler's first argument. The server can therefore run its schema and transforms again at the trust boundary. The form's abort signal is forwarded to oRPC caller options.
+
+Use `mapInput` only when the procedure intentionally has a different wire shape:
+
+```tsx
+const submit = createORPCSubmission(orpc.account.update, {
+  mapInput: (_values, context) => ({ account: context.input }),
+  context: () => ({ requestId: crypto.randomUUID() }),
+  options: { lastEventId: currentEventId },
+});
+```
+
+`context` and `options` may also be per-submit functions.
+
+## Typed form errors
+
+Install the structural error declaration once on an oRPC base builder:
+
+```ts title="server/orpc.ts"
+import { FORM_SUBMISSION_ERROR_MAP } from "@formadapter/orpc";
+import { os } from "@orpc/server";
+
+export const formProcedure = os.errors(FORM_SUBMISSION_ERROR_MAP);
+```
+
+Return structured errors from a handler:
+
+```ts
+import { submissionFailure } from "@formadapter/core";
+
+throw errors.FORM_SUBMISSION_FAILED({
+  data: submissionFailure({
+    fieldErrors: {
+      email: ["That email is already registered."],
+    },
+  }),
+});
+```
+
+The client maps `FORM_SUBMISSION_FAILED` directly into form state. It also maps oRPC `BAD_REQUEST` Standard Schema issues, including nested and array paths.
+
+<Callout type="info">
+  `BAD_REQUEST` mapping is a runtime fallback for oRPC's default input-validation payload. If an interceptor replaces or removes `data.issues`, expose a typed custom error or handle it with `mapError`.
+</Callout>
+
+## Actionable procedures
+
+Use `createORPCActionSubmission(procedure.actionable())` for actionable tuples. It is separate because actionable procedures return JSON errors rather than throwing ordinary `ORPCError` instances and cannot accept an AbortSignal.
+
+Unknown errors receive a safe generic message. Add `mapError` for application-specific error types; return `undefined` to fall through to the built-in mappings.

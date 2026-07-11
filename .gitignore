@@ -1,7 +1,15 @@
 node_modules
+.env
+.env.*
+!.env.example
 .turbo
+.next
+.next-e2e
+.source
 dist
 coverage
+out
+playwright-report
+test-results
 *.tsbuildinfo
 .DS_Store
-

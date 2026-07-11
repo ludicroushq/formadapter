@@ -1,0 +1,63 @@
+---
+title: HTTP
+description: Submit prepared input to any JSON or multipart endpoint.
+icon: RadioTower
+---
+
+Use `@formadapter/http` when the endpoint is not a framework action or typed procedure.
+
+```sh
+bun add @formadapter/http
+```
+
+## JSON
+
+```tsx title="profile-editor.tsx"
+import { createHttpSubmission } from "@formadapter/http";
+
+const submit = createHttpSubmission({
+  url: "/api/profile",
+  init: { credentials: "include" },
+});
+
+export function ProfileEditor() {
+  return <Profile.Form onSubmit={submit} />;
+}
+```
+
+JSON is the default. It sends the prepared schema input so the endpoint can validate and transform at its own trust boundary. The form abort signal is always forwarded.
+
+## Multipart and files
+
+```tsx
+const submit = createHttpSubmission({
+  url: "/api/profile",
+  body: "form-data",
+});
+```
+
+This sends FormAdapter's schema-aware FormData. Do not set `content-type`; `fetch` must add the multipart boundary.
+
+## A matching request handler
+
+```ts title="app/api/profile/route.ts"
+import { createRequestHandler, fieldError } from "@formadapter/server";
+import { profileConfig, profileSchema } from "@/app/profile/profile-schema";
+
+export const POST = createRequestHandler(
+  profileSchema,
+  async (profile) => {
+    if (await database.user.exists({ email: profile.email })) {
+      throw fieldError("email", "That email is already registered");
+    }
+    return database.profile.save(profile);
+  },
+  { config: profileConfig },
+);
+```
+
+The request handler accepts JSON, multipart FormData, and URL-encoded POST bodies. It returns serialized `SubmissionState` JSON with appropriate status codes.
+
+A successful endpoint response is wrapped as success unless it already returns a well-formed `SubmissionState`. Structured 4xx failures and intentional 4xx messages are preserved. Bodies from 5xx responses and exception details from network failures are never shown to users; they use `errorMessage` or a safe fallback. Abort errors are rethrown so cancellation still works.
+
+`init` may be a function of the current submit context, and a custom `fetch` implementation is supported for tests or non-browser runtimes.

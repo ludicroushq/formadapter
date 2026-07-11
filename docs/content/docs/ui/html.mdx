@@ -1,0 +1,53 @@
+---
+title: Native HTML
+description: Render accessible browser controls with no design-system styles.
+icon: CodeXml
+---
+
+`@formadapter/html` is a complete, unstyled adapter. It is useful for simple forms, progressive customization, and as the foundation for a design system.
+
+```sh
+bun add @formadapter/react @formadapter/html
+```
+
+## Set it once
+
+```tsx title="providers.tsx"
+"use client";
+
+import { HTMLProvider } from "@formadapter/html";
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return <HTMLProvider>{children}</HTMLProvider>;
+}
+```
+
+Adapter-neutral forms beneath that provider use semantic native controls. No stylesheet or source scan is required.
+
+For a standalone form, use the bound factory:
+
+```tsx
+import { createForm } from "@formadapter/html";
+
+const Contact = createForm(contactSchema);
+
+export function ContactForm() {
+  return <Contact.Form onSubmit={saveContact} />;
+}
+```
+
+## Build on working defaults
+
+`htmlAdapter` includes every control and structural slot, including arrays, summaries, aggregate errors, unsupported-field diagnostics, and wizards. Extend it instead of recreating accessibility wiring:
+
+```tsx
+import { htmlAdapter } from "@formadapter/html";
+
+export const productAdapter = htmlAdapter.extend({
+  name: "Product UI",
+  controls: { custom: { rating: RatingControl } },
+  slots: { Button: ProductButton },
+});
+```
+
+Individual controls and slots are exported when direct reuse is more convenient.

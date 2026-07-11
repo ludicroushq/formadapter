@@ -1,0 +1,54 @@
+{
+  "name": "@formadapter/http",
+  "version": "0.0.0",
+  "description": "JSON and multipart HTTP submissions for FormAdapter forms.",
+  "keywords": [
+    "fetch",
+    "forms",
+    "http",
+    "standard-schema",
+    "typescript"
+  ],
+  "homepage": "https://formadapter.com",
+  "bugs": {
+    "url": "https://github.com/ludicroushq/formadapter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ludicroushq/formadapter.git",
+    "directory": "packages/http"
+  },
+  "author": "ludicrous",
+  "type": "module",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo .turbo",
+    "test": "vitest run --config vitest.config.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@formadapter/core": "^0.0.0"
+  },
+  "license": "MIT"
+}

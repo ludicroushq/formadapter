@@ -1,0 +1,38 @@
+{
+  "name": "@formadapter/docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "clean": "rm -rf .next .next-e2e .source tsconfig.tsbuildinfo",
+    "dev": "next dev --turbopack --port 3000",
+    "postinstall": "fumadocs-mdx",
+    "start": "next start",
+    "typecheck": "fumadocs-mdx && next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "@formadapter/core": "workspace:*",
+    "@formadapter/daisyui": "workspace:*",
+    "@formadapter/react": "workspace:*",
+    "fumadocs-core": "16.11.1",
+    "fumadocs-mdx": "15.1.0",
+    "fumadocs-ui": "npm:@fumadocs/base-ui@16.11.1",
+    "lucide-react": "^1.23.0",
+    "next": "16.2.10",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.2",
+    "@types/mdx": "^2.0.14",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "daisyui": "5.6.16",
+    "postcss": "^8.5.16",
+    "tailwindcss": "4.3.2",
+    "typescript": "^6.0.2"
+  }
+}

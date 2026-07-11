@@ -1,0 +1,90 @@
+---
+title: Server submissions
+description: Validate once at the trust boundary and return one shared state to every form.
+icon: ServerCog
+---
+
+All integrations use the same serializable `SubmissionState<Data>`:
+
+```ts
+type SubmissionState<Data> =
+  | { status: "idle" }
+  | { status: "success"; data?: Data; message?: string }
+  | {
+      status: "error";
+      errorKind: "validation" | "business" | "transport";
+      fieldErrors: Record<string, readonly string[]>;
+      formErrors: readonly string[];
+    };
+```
+
+The React runtime renders pending state, success messages, form errors, and field errors without transport-specific UI code.
+
+## Build one reusable submission
+
+`@formadapter/server` compiles the input-side form model once and runs the original schema at the trust boundary. FormData is rebuilt from model-known paths and normalized for browser semantics. JSON is validated exactly as received, so strict-object keys or malformed nested values cannot disappear before validation.
+
+```ts title="server/create-profile.ts"
+import {
+  createSubmissionHandler,
+  fieldError,
+} from "@formadapter/server";
+import { profileConfig, profileSchema } from "../profile-schema";
+
+export const createProfile = createSubmissionHandler(
+  profileSchema,
+  async (profile, context) => {
+    if (await database.user.exists({ email: profile.email })) {
+      throw fieldError("email", "That email is already registered");
+    }
+
+    return database.profile.create({
+      data: profile,
+      auditRequest: context.request,
+    });
+  },
+  { config: profileConfig },
+);
+```
+
+Adapt that submission to more than one boundary:
+
+```ts
+import { toRequestHandler, toServerAction } from "@formadapter/server";
+
+export const action = toServerAction(createProfile);
+export const POST = toRequestHandler(createProfile);
+```
+
+Direct factories—`createServerAction` and `createRequestHandler`—are shorter when the handler has only one boundary.
+
+## Expected and unexpected errors
+
+Throw `fieldError(path, message)` or `formError(message)` for user-safe business failures. For multiple fields, throw `FormAdapterServerError` directly.
+
+A field path may target a scalar (`profile.name`) or a whole object/array (`profile` or `invites`). Aggregate errors render beside that group and in the error summary; an aggregate error and its child errors are preserved together.
+
+Unexpected errors are rethrown. Framework redirects, not-found control flow, error boundaries, and monitoring therefore continue to work instead of becoming a generic form error silently.
+
+Transport-specific context is preserved in the handler's second argument. Adapter-owned `payloadKind` and `formData` values always describe the real submission and cannot be spoofed by that context.
+
+## Why the server needs presentation config
+
+The schema is always validated on the server. Pass the same `config` to enforce `requiredWhenVisible` for every payload. Model-decoded FormData also prunes conditional hidden branches. JSON remains exactly as received so strict-object keys and malformed values cannot disappear before schema validation.
+
+Authentication, authorization, ownership, rate limits, and database constraints still belong in the handler. Browser values—including hidden inputs—are untrusted.
+
+## FormData without lost types
+
+Native FormData cannot represent an unchecked boolean, an empty array, or the difference between `"2"` and `2`. Before enhanced submission, FormAdapter rebuilds model-owned entries with explicit markers and preserves unrelated framework/submitter fields.
+
+The server decoder restores nested arrays, booleans, typed primitive options, nullable/optional blanks, disabled controls, and files before calling the original schema. You normally never touch those markers directly.
+
+FormData parsing throws a configuration error for schema paths it cannot encode: FormAdapter's `__formadapter_` namespace, `$ACTION_` names, prototype keys, numeric-like keys, and keys containing dots, brackets, or quotes. Values are never dropped silently. JSON-only server submissions may still validate those properties, but FormAdapter cannot render or encode them as form fields.
+
+<Cards>
+  <Card title="Next.js" description="Native React 19 Server Actions." href="/docs/server/nextjs" />
+  <Card title="TanStack Start" description="POST server functions through useServerFn." href="/docs/server/tanstack-start" />
+  <Card title="oRPC" description="Typed procedure clients and structured errors." href="/docs/server/orpc" />
+  <Card title="HTTP" description="JSON or multipart fetch and request handlers." href="/docs/server/http" />
+</Cards>

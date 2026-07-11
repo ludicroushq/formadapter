@@ -1,0 +1,75 @@
+---
+title: Adapter scopes
+description: Set a renderer once, replace it in a subtree, or bind one to a form factory.
+icon: Layers
+---
+
+Adapter resolution is deterministic:
+
+1. A complete `adapter` passed to one form
+2. The nearest `FormAdapterProvider`
+3. The adapter bound by `createFormFactory(adapter)`
+
+Most applications use a provider near the root and adapter-neutral forms everywhere below it.
+
+## A child replaces its parent
+
+Providers never merge adapters implicitly. Build a complete variant first with `extend`, then provide that variant to the narrower subtree.
+
+```tsx title="product-scope.tsx"
+"use client";
+
+import { htmlAdapter } from "@formadapter/html";
+import { FormAdapterProvider } from "@formadapter/react";
+import { ProductButton } from "@/ui/product-button";
+
+const productAdapter = htmlAdapter.extend({
+  name: "Product UI",
+  slots: {
+    Button: ProductButton,
+  },
+});
+
+export function ProductScope({ children }: { children: React.ReactNode }) {
+  return (
+    <FormAdapterProvider adapter={productAdapter}>
+      {children}
+    </FormAdapterProvider>
+  );
+}
+```
+
+If the application root provides DaisyUI, forms outside `ProductScope` keep DaisyUI and forms inside use the HTML-based `productAdapter` wholesale.
+
+## A one-form override
+
+Pass a complete adapter for an exceptional embedded form:
+
+```tsx
+<Checkout.Form adapter={checkoutAdapter} action={placeOrder} />
+```
+
+This has the highest priority. Partial objects are rejected because a renderer must always contain every required control and slot.
+
+## Bind an adapter to a factory
+
+Adapter packages and isolated modules can avoid context entirely:
+
+```tsx
+import { createFormFactory } from "@formadapter/react";
+
+const createProductForm = createFormFactory(productAdapter);
+const Review = createProductForm(reviewSchema).configure({
+  fields: {
+    rating: { control: "product:rating" },
+  },
+});
+```
+
+The factory preserves the exact names registered in `controls.custom`, so `control` remains a typed union instead of an arbitrary string.
+
+## Server Component boundary
+
+Adapters contain React components and functions, so do not serialize them through Server Component props. Put the provider in a small `"use client"` component, then render that provider from a server layout. The rest of the layout can stay server-rendered.
+
+See [custom design systems](/docs/ui/custom-design-systems) for the complete contract.

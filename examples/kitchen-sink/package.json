@@ -1,0 +1,35 @@
+{
+  "name": "@formadapter/example-kitchen-sink",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "clean": "rm -rf .next .next-e2e tsconfig.tsbuildinfo",
+    "dev": "next dev --turbopack",
+    "start": "next start",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@formadapter/core": "workspace:*",
+    "@formadapter/daisyui": "workspace:*",
+    "@formadapter/html": "workspace:*",
+    "@formadapter/nextjs": "workspace:*",
+    "@formadapter/react": "workspace:*",
+    "@swc/helpers": "0.5.15",
+    "arktype": "2.2.3",
+    "daisyui": "5.6.16",
+    "next": "16.2.10",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.2",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "tailwindcss": "4.3.2",
+    "typescript": "^6.0.2"
+  }
+}

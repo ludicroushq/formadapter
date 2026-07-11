@@ -1,0 +1,87 @@
+---
+title: Conditions and validation
+description: Model active branches, query-backed options, and stale-safe async checks.
+icon: GitBranch
+---
+
+Form behavior is configured against typed input values. The schema remains the final authority.
+
+## Conditional branches
+
+Pair `hidden` with `requiredWhenVisible` when a value is optional in the portable schema but required in one UI branch.
+
+```tsx
+const Account = createForm(z.object({
+  kind: z.enum(["personal", "company"]),
+  company: z.string().trim().min(2).optional(),
+})).configure({
+  fields: {
+    company: {
+      hidden: (values) => values.kind !== "company",
+      requiredWhenVisible: (values) => values.kind === "company",
+      requiredMessage: "Enter your company name",
+    },
+  },
+});
+```
+
+A presentation-hidden branch is not merely invisible. Its stale value is pruned before validation and submission, and async validation for that branch is skipped or aborted.
+
+`control: "hidden"` is intentionally different: it renders a real hidden input, keeps the value in form state, validates it, and submits it. Hidden inputs are browser-controlled data, not an authorization boundary.
+
+## Dynamic options
+
+Options may be static or synchronously derived from current form/application state.
+
+```tsx
+const Signup = createForm(schema).configure({
+  fields: {
+    role: {
+      options: (values) => rolesFor(values.accountType),
+    },
+  },
+});
+```
+
+Fetch asynchronous options outside configuration, then pass the resolved list at render time:
+
+```tsx
+<Signup.Field name="role" options={rolesQuery.data ?? []} />
+```
+
+String, number, boolean, and null option values keep their types through form state and the FormData codec.
+
+## Async field validation
+
+Async checks run only after authoritative schema validation succeeds for that field. They are debounced and receive a signal that aborts when a newer check supersedes them.
+
+```tsx
+const Signup = createForm(schema).configure({
+  fields: {
+    username: {
+      asyncValidationDebounceMs: 300,
+      asyncValidate: async (username, _values, { signal }) => {
+        const response = await fetch(`/api/usernames/${username}`, { signal });
+        const { available } = await response.json();
+        return available ? undefined : "That username is unavailable";
+      },
+    },
+  },
+});
+```
+
+Return one message, multiple messages, or `undefined`. Treat this as early feedback, not a trust boundary; repeat uniqueness and ownership checks on the server.
+
+## Validation timing
+
+Set `mode` on the form:
+
+```tsx
+<Signup.Form mode="onBlur" onSubmit={saveSignup} />
+```
+
+- `onSubmit` validates when submitted.
+- `onBlur` validates after a field is left.
+- `onChange` validates as values change.
+
+Schema transforms are applied only by the original schema. `onSubmit` receives the transformed output, while its context exposes the prepared input for server transport.

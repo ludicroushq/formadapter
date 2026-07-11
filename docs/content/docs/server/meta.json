@@ -1,0 +1,10 @@
+{
+  "title": "Server",
+  "pages": [
+    "submissions",
+    "nextjs",
+    "tanstack-start",
+    "orpc",
+    "http"
+  ]
+}

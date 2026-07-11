@@ -1,0 +1,99 @@
+---
+title: TanStack Start
+description: Connect a POST server function through TanStack Start's redirect-aware client hook.
+icon: SquareFunction
+---
+
+Install the integration beside the shared server package:
+
+```sh
+bun add @formadapter/tanstack-start @formadapter/server @tanstack/react-start
+```
+
+## Build the server function
+
+Keep schema parsing in a reusable FormAdapter submission. The TanStack validator checks only the transport shape, so validation failures return as `SubmissionState` instead of generic validator errors.
+
+```ts title="profile.functions.ts"
+import { createServerFn } from "@tanstack/react-start";
+import { createSubmissionHandler, fieldError } from "@formadapter/server";
+import {
+  formDataValidator,
+  tanstackStartHandler,
+} from "@formadapter/tanstack-start/server";
+import { profileConfig, profileSchema } from "./profile-schema";
+
+const submission = createSubmissionHandler(
+  profileSchema,
+  async (profile) => {
+    if (await database.user.exists({ email: profile.email })) {
+      throw fieldError("email", "That email is already registered");
+    }
+    return database.profile.save(profile);
+  },
+  { config: profileConfig },
+);
+
+export const saveProfile = createServerFn({ method: "POST" })
+  .validator(formDataValidator)
+  .handler(tanstackStartHandler(submission));
+```
+
+TanStack middleware data is preserved as `context.context` in the submission handler; `method` and `serverFnMeta` are forwarded as well. Use that request context for authentication, then authorize the submitted resource inside the handler.
+
+Bind the middleware context once when the business handler needs it typed:
+
+```ts title="profile.functions.ts"
+import { createSubmissionHandlerFactory } from "@formadapter/server";
+import type { TanStackStartSubmissionContext } from "@formadapter/tanstack-start/server";
+
+type AuthContext = { accountId: string };
+const createAuthenticatedSubmission = createSubmissionHandlerFactory<
+  TanStackStartSubmissionContext<AuthContext>
+>();
+
+const submission = createAuthenticatedSubmission(
+  profileSchema,
+  async (profile, { context }) => {
+    // context is AuthContext
+    return database.profile.save(context.accountId, profile);
+  },
+  { config: profileConfig },
+);
+
+export const saveProfile = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator(formDataValidator)
+  .handler(tanstackStartHandler(submission));
+```
+
+## Connect the form
+
+```tsx title="profile-editor.tsx"
+"use client";
+
+import { useTanStackStartSubmission } from "@formadapter/tanstack-start";
+import { Profile } from "./profile-form";
+import { saveProfile } from "./profile.functions";
+
+export function ProfileEditor() {
+  const onSubmit = useTanStackStartSubmission(saveProfile);
+  return <Profile.Form onSubmit={onSubmit} />;
+}
+```
+
+The hook uses TanStack Start's `useServerFn`, sends `context.formData`, forwards the abort signal, and returns the shared state. Options can supply dynamic headers, an alternate FormData value, or a custom fetch implementation.
+
+For typed customization callbacks, annotate the reusable options object with `UseTanStackStartSubmissionOptions<ValidatedValues, SchemaInput>`. Both `headers` and `getFormData` then receive the correct transformed values and raw schema input while the server-function result remains inferred.
+
+Client and server exports are separate deliberately. Import the hook from the package root or `/client`; import `formDataValidator` and `tanstackStartHandler` from `/server`.
+
+## Progressive enhancement
+
+The returned handler copies the original server function's `.url` and exposes:
+
+```ts
+onSubmit.metadata // { url, method: "post", encType: "multipart/form-data" }
+```
+
+That metadata can support an explicitly designed raw HTML path. The hook itself is the JavaScript-enhanced path; a no-JavaScript POST does not run FormAdapter's client state mapping or inline error rendering automatically.

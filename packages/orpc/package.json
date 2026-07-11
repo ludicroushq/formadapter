@@ -1,0 +1,62 @@
+{
+  "name": "@formadapter/orpc",
+  "version": "0.0.0",
+  "description": "Type-safe oRPC submissions for FormAdapter forms.",
+  "keywords": [
+    "forms",
+    "orpc",
+    "rpc",
+    "standard-schema",
+    "typescript"
+  ],
+  "homepage": "https://formadapter.com",
+  "bugs": {
+    "url": "https://github.com/ludicroushq/formadapter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ludicroushq/formadapter.git",
+    "directory": "packages/orpc"
+  },
+  "license": "MIT",
+  "author": "ludicrous",
+  "type": "module",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@formadapter/core": "^0.0.0"
+  },
+  "peerDependencies": {
+    "@orpc/client": ">=1.14.0 <2.0.0"
+  },
+  "devDependencies": {
+    "@orpc/client": "1.14.7",
+    "@orpc/server": "1.14.7"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo .turbo",
+    "dev": "tsdown --watch",
+    "test": "vitest run --config vitest.config.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  }
+}

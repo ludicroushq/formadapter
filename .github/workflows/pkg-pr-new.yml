@@ -22,13 +22,16 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Typecheck packages
-        run: bunx turbo run typecheck --filter='@formadapter/react'
+        run: bunx turbo run typecheck --filter='./packages/*'
 
       - name: Test packages
-        run: bunx turbo run test --filter='@formadapter/react'
+        run: bunx turbo run test --filter='./packages/*'
 
       - name: Build packages
-        run: bunx turbo run build --filter='@formadapter/react'
+        run: bunx turbo run build --filter='./packages/*'
+
+      - name: Verify package artifacts
+        run: bun tooling/package-artifacts.ts
 
       - name: Publish preview packages
-        run: npx pkg-pr-new publish --comment=update --packageManager=bun './packages/react'
+        run: bun run preview:publish

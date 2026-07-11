@@ -27,7 +27,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -40,11 +41,28 @@
     },
     "./package.json": "./package.json"
   },
+  "dependencies": {
+    "@formadapter/core": "^0.0.0",
+    "react-hook-form": "^7.81.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@standard-schema/spec": "^1.1.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "arktype": "^2.2.3",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "zod": "^4.4.3"
+  },
   "scripts": {
     "build": "tsdown",
     "clean": "rm -rf dist tsconfig.tsbuildinfo .turbo",
     "dev": "tsdown --watch",
-    "test": "bun test",
+    "test": "vitest run --config vitest.config.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage",
     "typecheck": "tsc --project tsconfig.json --noEmit"
   }
 }

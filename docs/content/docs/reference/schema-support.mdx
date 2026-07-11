@@ -1,0 +1,80 @@
+---
+title: Schema support
+description: Supported structures, explicit boundaries, and how Zod and ArkType are interpreted.
+icon: ScanSearch
+---
+
+FormAdapter requires both Standard Schema V1 validation and Standard JSON Schema V1 input conversion. Zod 4 and ArkType 2 provide both natively and are the supported schema libraries today.
+
+Structure is read from the input-side JSON Schema. Collected values are then sent through the original schema, so refinements and input-to-output transforms remain authoritative.
+
+## Supported
+
+| Shape | Notes |
+| --- | --- |
+| Object root | Expected for automatic form layout |
+| Nested objects | Render as adapter groups |
+| Strings, numbers, integers, booleans | Formats and numeric/string constraints are preserved |
+| Optional, nullable, and defaults | Browser blanks are prepared to match schema absence semantics |
+| Enums and literal unions | Render as finite typed options |
+| Homogeneous scalar or object arrays | Add, remove, reorder, bounds, and item configuration |
+| Arrays of files | The supported model for multiple uploads |
+| References and `allOf` | Resolved and intersected; unrepresentable conflicts become diagnostics |
+| Discriminated object unions | Normalized into conditional branches outside arrays |
+
+Discriminated branches keep only the active branch's values. Inactive stale values are pruned before validation and submission.
+
+## Explicitly unsupported
+
+- Tuples and `prefixItems`
+- Dynamic record keys, `patternProperties`, and open-ended property maps
+- General structural unions that cannot be represented by one control
+- Recursive or circular references
+- Discriminated object unions inside arrays
+- `multiple: true` on a scalar file schema
+- Property names that collide with form-path or transport syntax
+
+These become `unsupported` model nodes. A UI adapter renders the reason through its `Unsupported` slot; FormAdapter never silently drops the field.
+
+Property names must be nonempty and must not coerce to a number, contain `.`, `[`, `]`, `'`, or `"`, or use `root`, FormAdapter, Server Action, or JavaScript prototype-reserved names.
+
+## Zod transforms
+
+The form model uses schema input. The submit handler receives schema output:
+
+```tsx
+const schema = z.object({
+  launchDate: z.iso.date().pipe(z.coerce.date()),
+});
+
+<Launch.Form
+  onSubmit={(values, context) => {
+    values.launchDate;        // Date
+    context.input.launchDate; // string
+  }}
+/>;
+```
+
+Server transports send prepared input by default so the server can apply the same transform again at its trust boundary.
+
+## ArkType predicates
+
+Some ArkType predicates are opaque to JSON Schema. By default, FormAdapter asks ArkType for the predicate's base structure and still applies the opaque predicate during authoritative validation.
+
+To reject opaque conversion instead:
+
+```tsx
+const Form = createForm(schema).configure({
+  jsonSchema: {
+    opaqueRefinements: "error",
+  },
+});
+```
+
+`jsonSchema.libraryOptions` is forwarded to the schema library's input conversion when library-specific control is necessary.
+
+## Asynchronous options
+
+Configuration options are finite and synchronous. Fetch options in application code, then pass the resolved list to a composed `Field`. This keeps schema compilation deterministic and lets your query library own loading, caching, and errors.
+
+Other schema implementations that expose both standards may work through the same contract, but only Zod 4 and ArkType 2 are tested and supported currently.

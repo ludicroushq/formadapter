@@ -1,0 +1,86 @@
+---
+title: Arrays, files, and drafts
+description: Handle repeatable data, uploads, and interrupted work without custom form state.
+icon: Database
+---
+
+## Homogeneous arrays
+
+Scalar and object arrays support add, remove, reorder, focus management, custom labels, and schema bounds.
+
+```tsx
+const Team = createForm(z.object({
+  invites: z.array(z.object({
+    email: z.email(),
+    role: z.enum(["editor", "viewer"]),
+  })).min(1).max(5),
+})).configure({
+  fields: {
+    invites: {
+      label: "Team invites",
+      array: {
+        addLabel: "Invite teammate",
+        itemLabel: (index) => `Teammate ${index + 1}`,
+        removeLabel: "Remove teammate",
+      },
+    },
+    "invites[].email": { label: "Email address" },
+    "invites[].role": { control: "radio", label: "Access level" },
+  },
+});
+```
+
+Minimum items are seeded into defaults. Add, remove, and move actions cannot cross `minItems` or `maxItems`. Item action buttons receive distinct accessible labels even when their visible labels repeat.
+
+## Files
+
+Use a scalar file schema for one file and an array for multiple files:
+
+```tsx
+const Upload = createForm(z.object({
+  avatar: z.file().max(2_000_000).mime("image/png").optional(),
+  attachments: z.array(z.file()).max(3),
+})).configure({
+  fields: {
+    avatar: { label: "Profile image" },
+    attachments: {
+      label: "Attachments",
+      array: { addLabel: "Add attachment", itemLabel: "Attachment" },
+    },
+  },
+});
+```
+
+Do not set `multiple: true` on a scalar file. The UI would collect an array while the schema expects one file, so FormAdapter reports it as unsupported instead. For transport, use a native Server Action or HTTP `body: "form-data"`.
+
+## Draft persistence
+
+Pass a key to persist the current form input state in `localStorage`. The draft loads before the form becomes interactive and clears after a successful submission by default.
+
+```tsx
+<Profile.Form
+  action={saveProfile}
+  draft={{ key: `profile:${profile.id}`, debounceMs: 500 }}
+/>
+```
+
+Use the included session adapter when the draft should disappear with the tab:
+
+```tsx
+import { sessionStorageDraftAdapter } from "@formadapter/react";
+
+<Profile.Form
+  draft={{
+    key: `profile:${profile.id}`,
+    adapter: sessionStorageDraftAdapter,
+    clearOnSuccess: false,
+  }}
+  onSubmit={saveProfile}
+/>;
+```
+
+A custom adapter may load, save, and clear synchronously or asynchronously, which covers IndexedDB and server-backed drafts. `useFormState()` exposes `draftStatus` and `clearDraft()` for UI feedback.
+
+<Callout type="warn">
+  Browser storage is JSON-like and does not preserve `File` objects. Use a custom draft adapter if uploads must survive a reload.
+</Callout>

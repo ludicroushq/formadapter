@@ -1,0 +1,11 @@
+{
+  "title": "FormAdapter",
+  "pages": [
+    "index",
+    "getting-started",
+    "forms",
+    "ui",
+    "server",
+    "reference"
+  ]
+}

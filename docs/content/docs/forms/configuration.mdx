@@ -1,0 +1,86 @@
+---
+title: Configure fields
+description: Add presentation and behavior while keeping schema rules in the schema.
+icon: SlidersHorizontal
+---
+
+`createForm(schema).configure(...)` returns a schema-bound namespace. Field paths, field values, predicates, option values, and validators are contextually typed.
+
+This is a realistic workspace form:
+
+```tsx title="workspace-form.tsx"
+import { createForm } from "@formadapter/react";
+import { z } from "zod";
+
+const workspaceSchema = z.object({
+  name: z.string().trim().min(2).max(60),
+  kind: z.enum(["personal", "company"]).default("personal"),
+  company: z.string().trim().min(2).optional(),
+  seats: z.number().int().min(1).max(250).default(5),
+  notes: z.string().max(500).optional(),
+  invites: z.array(z.object({
+    email: z.email(),
+    role: z.enum(["editor", "viewer"]),
+  })).min(1).max(5),
+});
+
+export const Workspace = createForm(workspaceSchema).configure({
+  fields: {
+    name: { label: "Workspace name", placeholder: "Northstar Labs" },
+    kind: { control: "radio", label: "Workspace type" },
+    company: {
+      hidden: (values) => values.kind !== "company",
+      label: "Legal company name",
+      requiredWhenVisible: (values) => values.kind === "company",
+    },
+    seats: { label: "Seats", description: "One to 250 seats." },
+    notes: { control: "textarea", controlProps: { rows: 4 } },
+    invites: {
+      array: { addLabel: "Invite teammate", itemLabel: "Teammate" },
+      label: "Team invites",
+    },
+    "invites[].email": { label: "Email" },
+    "invites[].role": { control: "select", label: "Access level" },
+  },
+});
+```
+
+Misspell `invites[].email`, compare `kind` to an impossible value, or return the wrong type from a validator and TypeScript reports it at the configuration site.
+
+## What is inferred
+
+FormAdapter chooses native controls from the input-side JSON Schema:
+
+| Schema shape | Default control |
+| --- | --- |
+| string | text input |
+| email, URL, date, time | matching native input |
+| number or integer | number input |
+| boolean | checkbox |
+| enum or literal union | select |
+| file | file input |
+| object | group |
+| homogeneous array | repeatable array |
+
+Override the control only when presentation needs it, such as `textarea`, `radio`, `range`, or a registered custom control.
+
+## Common field options
+
+| Option | Use it for |
+| --- | --- |
+| `label`, `description`, `placeholder` | Human-facing copy |
+| `control`, `controlProps` | Control selection and adapter-specific native props |
+| `hidden`, `disabled`, `readOnly` | Static or form-wide typed predicates |
+| `requiredWhenVisible` | UI branches where a schema-optional value becomes required |
+| `options` | Static or synchronous options with typed primitive values |
+| `asyncValidate` | Debounced checks after schema validation |
+| `order`, `className` | Automatic-layout ordering and adapter styling |
+| `array` | Repeatable-item labels and action copy |
+
+`controlProps` is intentionally an open record because adapters decide what their controls accept. For exact custom-control names, create forms through `createFormFactory(yourTypedAdapter)`.
+
+## Keep validation authoritative
+
+Do not repeat `min`, `max`, regex, email, or refinement rules in configuration. FormAdapter reads constraints from the schema and always runs collected values through the original schema.
+
+Use configuration for presentation rules that do not belong in the portable data contract. When server parsing must enforce conditional pruning or `requiredWhenVisible`, pass the same config to the server submission helper.
