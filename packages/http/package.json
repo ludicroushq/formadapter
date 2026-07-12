@@ -1,6 +1,6 @@
 {
   "name": "@formadapter/http",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "JSON and multipart HTTP submissions for FormAdapter forms.",
   "keywords": [
     "fetch",
@@ -48,7 +48,7 @@
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@formadapter/core": "^0.0.0"
+    "@formadapter/core": "^0.0.1"
   },
   "license": "MIT"
 }

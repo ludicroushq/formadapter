@@ -1,6 +1,6 @@
 {
   "name": "@formadapter/daisyui",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Native DaisyUI v5 renderer for FormAdapter.",
   "keywords": [
     "daisyui",
@@ -42,9 +42,9 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@formadapter/core": "^0.0.0",
-    "@formadapter/html": "^0.0.0",
-    "@formadapter/react": "^0.0.0"
+    "@formadapter/core": "^0.0.1",
+    "@formadapter/html": "^0.0.1",
+    "@formadapter/react": "^0.0.1"
   },
   "peerDependencies": {
     "daisyui": "^5.0.0",
