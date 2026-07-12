@@ -1,6 +1,6 @@
 {
   "name": "@formadapter/html",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Accessible, unstyled native HTML renderer for FormAdapter.",
   "keywords": [
     "forms",
@@ -47,8 +47,8 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@formadapter/core": "^0.0.0",
-    "@formadapter/react": "^0.0.0"
+    "@formadapter/core": "^0.0.1",
+    "@formadapter/react": "^0.0.1"
   },
   "peerDependencies": {
     "react": "^19.0.0"

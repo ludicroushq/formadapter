@@ -1,6 +1,6 @@
 {
   "name": "@formadapter/react",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Automatic React schema forms for any UI kit.",
   "keywords": [
     "forms",
@@ -42,7 +42,7 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@formadapter/core": "^0.0.0",
+    "@formadapter/core": "^0.0.1",
     "react-hook-form": "^7.81.0"
   },
   "peerDependencies": {

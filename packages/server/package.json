@@ -1,6 +1,6 @@
 {
   "name": "@formadapter/server",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Framework-neutral parsing, validation, and submission transports for FormAdapter.",
   "keywords": [
     "forms",
@@ -42,7 +42,7 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@formadapter/core": "^0.0.0"
+    "@formadapter/core": "^0.0.1"
   },
   "devDependencies": {
     "arktype": "^2.2.3",

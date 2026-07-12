@@ -94,7 +94,7 @@
     },
     "packages/core": {
       "name": "@formadapter/core",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "devDependencies": {
         "arktype": "^2.2.3",
         "zod": "^4.4.3",
@@ -102,11 +102,11 @@
     },
     "packages/daisyui": {
       "name": "@formadapter/daisyui",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
-        "@formadapter/core": "^0.0.0",
-        "@formadapter/html": "^0.0.0",
-        "@formadapter/react": "^0.0.0",
+        "@formadapter/core": "^0.0.1",
+        "@formadapter/html": "^0.0.1",
+        "@formadapter/react": "^0.0.1",
       },
       "devDependencies": {
         "@types/react": "^19.2.17",
@@ -122,10 +122,10 @@
     },
     "packages/html": {
       "name": "@formadapter/html",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
-        "@formadapter/core": "^0.0.0",
-        "@formadapter/react": "^0.0.0",
+        "@formadapter/core": "^0.0.1",
+        "@formadapter/react": "^0.0.1",
       },
       "devDependencies": {
         "@types/react": "^19.2.17",
@@ -140,14 +140,14 @@
     },
     "packages/http": {
       "name": "@formadapter/http",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "@formadapter/core": "^0.0.0",
       },
     },
     "packages/nextjs": {
       "name": "@formadapter/nextjs",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "@formadapter/server": "^0.0.0",
       },
@@ -157,7 +157,7 @@
     },
     "packages/orpc": {
       "name": "@formadapter/orpc",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "@formadapter/core": "^0.0.0",
       },
@@ -172,9 +172,9 @@
     },
     "packages/react": {
       "name": "@formadapter/react",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
-        "@formadapter/core": "^0.0.0",
+        "@formadapter/core": "^0.0.1",
         "react-hook-form": "^7.81.0",
       },
       "devDependencies": {
@@ -192,7 +192,7 @@
     },
     "packages/server": {
       "name": "@formadapter/server",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "@formadapter/core": "^0.0.0",
       },
@@ -203,7 +203,7 @@
     },
     "packages/shadcn": {
       "name": "@formadapter/shadcn",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "@formadapter/html": "^0.0.0",
         "@formadapter/react": "^0.0.0",
@@ -222,7 +222,7 @@
     },
     "packages/tanstack-start": {
       "name": "@formadapter/tanstack-start",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "@formadapter/core": "^0.0.0",
       },

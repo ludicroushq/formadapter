@@ -1,6 +1,6 @@
 {
   "name": "@formadapter/orpc",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Type-safe oRPC submissions for FormAdapter forms.",
   "keywords": [
     "forms",
@@ -42,13 +42,13 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@formadapter/core": "^0.0.0"
+    "@formadapter/core": "^0.0.1"
   },
   "peerDependencies": {
     "@orpc/client": ">=1.14.0 <2.0.0"
   },
   "devDependencies": {
-    "@formadapter/react": "^0.0.0",
+    "@formadapter/react": "^0.0.1",
     "@orpc/client": "1.14.7",
     "@orpc/server": "1.14.7"
   },

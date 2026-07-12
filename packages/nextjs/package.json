@@ -1,6 +1,6 @@
 {
   "name": "@formadapter/nextjs",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Native Next.js Server Action helpers for FormAdapter.",
   "keywords": [
     "forms",
@@ -48,7 +48,7 @@
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@formadapter/server": "^0.0.0"
+    "@formadapter/server": "^0.0.1"
   },
   "devDependencies": {
     "zod": "^4.4.3"
