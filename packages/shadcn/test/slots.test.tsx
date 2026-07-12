@@ -381,10 +381,8 @@ describe("shadcn slots", () => {
     expect(screen.getByRole("progressbar", { name: "Step 2 of 2" }))
       .toHaveValue(2);
     expect(screen.getByRole("heading", { name: "Contact" })).toHaveFocus();
-    expect(within(screen.getByRole("list", { name: "Form steps" }))
-      .getByText("Identity").closest("li"))
+    expect(screen.getByRole("listitem", { name: "Identity, completed" }))
       .toHaveAttribute("data-completed", "true");
-    expect(screen.getByText("Completed")).toHaveClass("sr-only");
     expect(screen.getByRole("navigation", { name: "Wizard navigation" }))
       .toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Back" }))

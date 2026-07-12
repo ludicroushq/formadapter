@@ -8,10 +8,16 @@
       "@formadapter/react",
       "@formadapter/html",
       "@formadapter/daisyui",
-      "@formadapter/shadcn"
+      "@formadapter/shadcn",
+      "@formadapter/server",
+      "@formadapter/nextjs",
+      "@formadapter/tanstack-start",
+      "@formadapter/orpc",
+      "@formadapter/http"
     ]
   ],
   "linked": [],
+  "privatePackages": false,
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",

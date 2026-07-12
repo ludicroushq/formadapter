@@ -5,8 +5,8 @@ import { createShadcnSetup, type ShadcnSetup } from "./factory";
 export type { BaseUIShadcnComponents } from "./components";
 export type { ShadcnProviderProps, ShadcnSetup } from "./factory";
 
-export function createShadcn<const Components extends BaseUIShadcnComponents>(
-  components: Components,
+export function createShadcn(
+  components: BaseUIShadcnComponents,
 ): ShadcnSetup {
   return createShadcnSetup(
     "shadcn/ui (Base UI)",

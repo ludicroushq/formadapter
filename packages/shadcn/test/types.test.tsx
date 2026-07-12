@@ -19,6 +19,36 @@ function ProductButton({
   return <TestButton {...props} />;
 }
 
+function ManagedButton({
+  variant,
+  ...props
+}: Omit<ComponentPropsWithRef<typeof TestButton>, "variant"> & {
+  readonly variant: "default" | "destructive" | "outline" | "link";
+}): React.JSX.Element {
+  return <TestButton {...props} variant={variant} />;
+}
+
+function VerticalOrHorizontalField({
+  orientation,
+  ...props
+}: ComponentPropsWithRef<"div"> & {
+  readonly orientation?: "vertical" | "horizontal";
+}): React.JSX.Element {
+  return <div data-orientation={orientation} {...props} />;
+}
+
+function NumericProgress({
+  value,
+  max,
+  ...props
+}: {
+  readonly "aria-label"?: string | undefined;
+  readonly max: number;
+  readonly value: number;
+}): React.JSX.Element {
+  return <progress max={max} value={value} {...props} />;
+}
+
 function RequiredProductButton({
   analyticsId: _analyticsId,
   ...props
@@ -44,12 +74,20 @@ function verifyRejectedComponents(): void {
   createRadixShadcn(baseComponents);
 }
 
-test("infers customized user components without widening their props", () => {
+test("accepts customized components that implement only managed props", () => {
   const setup = createBaseUIShadcn({
+    ...baseComponents,
+    Button: ManagedButton,
+    Field: VerticalOrHorizontalField,
+    Progress: NumericProgress,
+  });
+
+  const productSetup = createBaseUIShadcn({
     ...baseComponents,
     Button: ProductButton,
   });
 
   expect(setup.Provider).toBeTypeOf("function");
+  expect(productSetup.Provider).toBeTypeOf("function");
   expect(verifyRejectedComponents).toBeTypeOf("function");
 });

@@ -1,23 +1,17 @@
-import type { InputHTMLAttributes } from "react";
-
 import {
   nativeControlProps,
   optionForValue,
   selectedOptionValue,
   serializedOptionValue,
 } from "@formadapter/html/native";
-import type { ControlComponent, ControlProps } from "@formadapter/react";
+import type { ControlProps } from "@formadapter/react";
 
 import type { BaseUIShadcnComponents } from "./components";
+import type { ChoiceControls } from "./factory";
 
 function requiresCheckedValue(field: ControlProps["field"]): boolean {
   return typeof field.source === "object" && field.source !== null &&
     field.source.const === true;
-}
-
-export interface ChoiceControls {
-  readonly checkbox: ControlComponent;
-  readonly radio: ControlComponent;
 }
 
 export function createBaseUIChoiceControls(
@@ -45,12 +39,11 @@ export function createBaseUIChoiceControls(
     required,
     value,
   }: ControlProps): React.JSX.Element {
-    const configured = nativeControlProps<InputHTMLAttributes<HTMLInputElement>>(
-      field,
-    );
+    const configured = nativeControlProps<Record<string, unknown>>(field);
 
     return (
       <Checkbox
+        {...configured.props}
         {...inputProps}
         aria-invalid={invalid || undefined}
         aria-readonly={readOnly || undefined}
@@ -87,12 +80,11 @@ export function createBaseUIChoiceControls(
     value,
   }: ControlProps): React.JSX.Element {
     const options = field.options ?? [];
-    const configured = nativeControlProps<InputHTMLAttributes<HTMLInputElement>>(
-      field,
-    );
+    const configured = nativeControlProps<Record<string, unknown>>(field);
 
     return (
       <RadioGroup
+        {...configured.props}
         {...inputProps}
         aria-invalid={invalid || undefined}
         aria-label={inputProps["aria-label"] ?? field.label}

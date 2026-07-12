@@ -1,5 +1,3 @@
-import type { InputHTMLAttributes } from "react";
-
 import {
   nativeControlProps,
   optionForValue,
@@ -9,7 +7,7 @@ import {
 import type { ControlProps } from "@formadapter/react";
 
 import type { RadixShadcnComponents } from "./components";
-import type { ChoiceControls } from "./baseui-controls";
+import type { ChoiceControls } from "./factory";
 
 function requiresCheckedValue(field: ControlProps["field"]): boolean {
   return typeof field.source === "object" && field.source !== null &&
@@ -33,6 +31,7 @@ export function createRadixChoiceControls(
     field,
     id,
     inputProps,
+    invalid,
     name,
     onBlur,
     onValueChange,
@@ -40,13 +39,13 @@ export function createRadixChoiceControls(
     required,
     value,
   }: ControlProps): React.JSX.Element {
-    const configured = nativeControlProps<InputHTMLAttributes<HTMLInputElement>>(
-      field,
-    );
+    const configured = nativeControlProps<Record<string, unknown>>(field);
 
     return (
       <Checkbox
+        {...configured.props}
         {...inputProps}
+        aria-invalid={invalid || undefined}
         aria-readonly={readOnly || undefined}
         checked={value === true}
         className={configured.className}
@@ -81,12 +80,11 @@ export function createRadixChoiceControls(
   }: ControlProps): React.JSX.Element {
     const options = field.options ?? [];
     const unavailable = disabled || readOnly;
-    const configured = nativeControlProps<InputHTMLAttributes<HTMLInputElement>>(
-      field,
-    );
+    const configured = nativeControlProps<Record<string, unknown>>(field);
 
     return (
       <RadioGroup
+        {...configured.props}
         {...inputProps}
         aria-invalid={invalid || undefined}
         aria-label={inputProps["aria-label"] ?? field.label}

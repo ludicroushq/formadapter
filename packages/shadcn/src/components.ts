@@ -19,8 +19,6 @@ type ButtonProps = {
     | "default"
     | "destructive"
     | "outline"
-    | "secondary"
-    | "ghost"
     | "link";
 };
 
@@ -29,7 +27,7 @@ type TextareaProps = ComponentPropsWithRef<"textarea">;
 type NativeSelectProps = Omit<ComponentPropsWithRef<"select">, "size">;
 type NativeSelectOptionProps = ComponentPropsWithRef<"option">;
 type FieldProps = ComponentPropsWithRef<"div"> & {
-  readonly orientation?: "vertical" | "horizontal" | "responsive";
+  readonly orientation?: "vertical" | "horizontal";
 };
 type FieldContentProps = ComponentPropsWithRef<"div">;
 type FieldDescriptionProps = ComponentPropsWithRef<"p">;
@@ -47,9 +45,8 @@ type AlertTitleProps = ComponentPropsWithRef<"div">;
 type SpinnerProps = ComponentPropsWithRef<"svg">;
 type ProgressProps = {
   readonly "aria-label"?: string | undefined;
-  readonly className?: string | undefined;
   readonly max: number;
-  readonly value: number | null;
+  readonly value: number;
 };
 
 export interface CommonShadcnComponents {
@@ -123,7 +120,7 @@ export interface BaseUIShadcnComponents extends CommonShadcnComponents {
 }
 
 type RadixCheckboxProps = AccessiblePrimitiveProps & {
-  readonly checked: boolean | "indeterminate";
+  readonly checked: boolean;
   readonly disabled: boolean;
   readonly id: string;
   readonly name: string;

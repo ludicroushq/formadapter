@@ -424,8 +424,8 @@ export const ShadcnProvider = shadcn.Provider;
 The component bundle contains the generated Alert, Button, Checkbox, Field,
 Input, Native Select, Progress, Radio Group, Spinner, and Textarea exports. The
 returned setup provides `Provider`, `adapter`, and an adapter-bound `createForm`.
-There is no FormAdapter CSS import: your generated components, custom variants,
-and existing theme remain the styling source.
+There is no FormAdapter CSS import: your generated component source and
+existing theme remain the styling source.
 
 ## Current boundaries
 

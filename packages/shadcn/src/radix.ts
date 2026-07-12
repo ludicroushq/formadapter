@@ -5,8 +5,8 @@ import { createRadixChoiceControls } from "./radix-controls";
 export type { RadixShadcnComponents } from "./components";
 export type { ShadcnProviderProps, ShadcnSetup } from "./factory";
 
-export function createShadcn<const Components extends RadixShadcnComponents>(
-  components: Components,
+export function createShadcn(
+  components: RadixShadcnComponents,
 ): ShadcnSetup {
   return createShadcnSetup(
     "shadcn/ui (Radix UI)",

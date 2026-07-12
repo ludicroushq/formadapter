@@ -4,11 +4,11 @@ import {
   createAdapter,
   createFormFactory,
   FormAdapterProvider,
+  type ControlComponent,
   type CreateForm,
   type FormAdapter,
 } from "@formadapter/react";
 
-import type { ChoiceControls } from "./baseui-controls";
 import type { CommonShadcnComponents } from "./components";
 import { createNativeControls } from "./native-controls";
 import { createSlots } from "./slots";
@@ -24,6 +24,11 @@ export interface ShadcnSetup {
   readonly adapter: ShadcnFormAdapter;
   readonly createForm: CreateForm<ShadcnFormAdapter>;
   readonly Provider: ComponentType<ShadcnProviderProps>;
+}
+
+export interface ChoiceControls {
+  readonly checkbox: ControlComponent;
+  readonly radio: ControlComponent;
 }
 
 export function createShadcnSetup(

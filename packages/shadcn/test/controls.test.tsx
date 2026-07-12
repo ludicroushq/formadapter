@@ -301,6 +301,12 @@ describe("shadcn controls", () => {
   test("renders accessible native radio options and respects read-only state", () => {
     const onValueChange = vi.fn<(value: unknown) => void>();
     const field = scalar({
+      config: {
+        controlProps: {
+          "data-testid": "base-plan",
+          title: "Choose a Base UI plan",
+        },
+      },
       control: "radio",
       label: "Plan",
       options: [
@@ -318,6 +324,8 @@ describe("shadcn controls", () => {
     const starter = screen.getByRole("radio", { name: "Starter" });
     const team = screen.getByRole("radio", { name: "Team" });
     const group = screen.getByRole("radiogroup", { name: "Plan" });
+    expect(group).toHaveAttribute("data-testid", "base-plan");
+    expect(group).toHaveAttribute("title", "Choose a Base UI plan");
     expect(group).toHaveAttribute("data-ui", "base-radio-group");
     expect(group).toHaveAttribute("aria-invalid", "true");
     expect(starter).toBeChecked();
@@ -346,6 +354,12 @@ describe("shadcn controls", () => {
   test("renders required native checkboxes and blocks read-only changes", () => {
     const onValueChange = vi.fn<(value: unknown) => void>();
     const field = scalar({
+      config: {
+        controlProps: {
+          "data-testid": "base-terms",
+          title: "Accept the Base UI terms",
+        },
+      },
       control: "checkbox",
       dataType: "boolean",
       label: "Accept terms",
@@ -363,6 +377,8 @@ describe("shadcn controls", () => {
     const { rerender } = render(<Checkbox {...props} />);
 
     const checkbox = screen.getByRole("checkbox", { name: "Accept terms" });
+    expect(checkbox).toHaveAttribute("data-testid", "base-terms");
+    expect(checkbox).toHaveAttribute("title", "Accept the Base UI terms");
     expect(checkbox).toHaveAttribute("data-ui", "base-checkbox");
     expect(checkbox).toBeRequired();
     expect(checkbox).toHaveAttribute("aria-invalid", "true");
@@ -397,6 +413,12 @@ describe("shadcn controls", () => {
   test("connects Radix checkbox and radio events through their button refs", () => {
     const checkboxChange = vi.fn<(value: unknown) => void>();
     const checkboxField = scalar({
+      config: {
+        controlProps: {
+          "data-testid": "radix-terms",
+          title: "Accept the Radix UI terms",
+        },
+      },
       control: "checkbox",
       dataType: "boolean",
       label: "Radix terms",
@@ -406,6 +428,7 @@ describe("shadcn controls", () => {
       <RadixCheckbox
         {...controlProps(checkboxField, {
           inputProps: { "aria-label": "Radix terms" },
+          invalid: true,
           onValueChange: checkboxChange,
           value: false,
         })}
@@ -413,6 +436,9 @@ describe("shadcn controls", () => {
     );
 
     const checkbox = screen.getByRole("checkbox", { name: "Radix terms" });
+    expect(checkbox).toHaveAttribute("aria-invalid", "true");
+    expect(checkbox).toHaveAttribute("data-testid", "radix-terms");
+    expect(checkbox).toHaveAttribute("title", "Accept the Radix UI terms");
     expect(checkbox).toHaveAttribute("data-ui", "radix-checkbox");
     fireEvent.click(checkbox);
     expect(checkboxChange).toHaveBeenCalledWith(true);
@@ -431,6 +457,12 @@ describe("shadcn controls", () => {
 
     const radioChange = vi.fn<(value: unknown) => void>();
     const radioField = scalar({
+      config: {
+        controlProps: {
+          "data-testid": "radix-plan",
+          title: "Choose a Radix UI plan",
+        },
+      },
       control: "radio",
       label: "Radix plan",
       options: [
@@ -446,6 +478,9 @@ describe("shadcn controls", () => {
         })}
       />,
     );
+    const radixGroup = screen.getByRole("radiogroup", { name: "Radix plan" });
+    expect(radixGroup).toHaveAttribute("data-testid", "radix-plan");
+    expect(radixGroup).toHaveAttribute("title", "Choose a Radix UI plan");
     fireEvent.click(screen.getByRole("radio", { name: "Team" }));
     expect(radioChange).toHaveBeenCalledWith(2);
   });

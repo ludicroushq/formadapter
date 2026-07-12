@@ -4,7 +4,7 @@ description: Connect FormAdapter to the shadcn/ui components already owned by yo
 icon: Component
 ---
 
-The shadcn adapter renders your generated components, including any variants or source changes you made. FormAdapter supplies form state, accessibility, and validation props; your components remain responsible for presentation.
+The shadcn adapter renders your generated components, preserving their source changes and styling. FormAdapter supplies form state, accessibility, and validation props through a small contract containing only the button variants and other props it renders.
 
 ## Install the components
 
@@ -55,7 +55,7 @@ export const shadcn = createShadcn({
 export const ShadcnProvider = shadcn.Provider;
 ```
 
-The component bundle is intentionally explicit. Missing or incompatible components fail during setup instead of silently falling back to FormAdapter-owned lookalikes.
+The component bundle is intentionally explicit. Missing or incompatible components fail type-checking where `createShadcn` is called instead of silently falling back to FormAdapter-owned lookalikes.
 
 ## Provide it once
 

@@ -87,7 +87,12 @@ for (const [name, route] of [
     await page.goto(`${exampleUrl}${route}`);
 
     const email = page.getByRole("textbox", { name: "Email" });
+    const message = page.getByRole("textbox", { name: "Message" });
+    const team = page.getByRole("radio", { name: /team/iu });
+    const terms = page.getByRole("checkbox", { name: "Accept terms" });
     await expect(email).not.toHaveClass(/(?:^|\s)input(?:\s|$)/u);
+    await expect(team).not.toBeChecked();
+    await expect(terms).not.toBeChecked();
 
     const initialStyle = await email.evaluate((element) => ({
       borderColor: getComputedStyle(element).borderTopColor,
@@ -121,6 +126,16 @@ for (const [name, route] of [
       (element) => getComputedStyle(element).borderTopColor,
     );
     expect(invalidBorderColor).not.toBe(initialStyle.borderColor);
+
+    await team.click();
+    await terms.click();
+    await expect(team).toBeChecked();
+    await expect(terms).toBeChecked();
+
+    await email.fill("ada@example.com");
+    await message.fill("A complete generated component test");
+    await page.getByRole("button", { name: "Submit" }).click();
+    await expect(email).not.toHaveAttribute("aria-invalid", "true");
   });
 }
 

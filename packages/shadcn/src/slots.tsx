@@ -352,13 +352,13 @@ export function createSlots(
           <ol aria-label="Form steps" data-slot="wizard-steps">
             {steps.map((step, index) => (
               <li
+                aria-label={`${step.title}${step.completed ? ", completed" : ""}`}
                 aria-current={step.current ? "step" : undefined}
                 data-completed={step.completed || undefined}
                 key={step.id}
               >
                 <span aria-hidden="true">{index + 1}</span>
-                <span>{step.title}</span>
-                {step.completed ? <span className="sr-only">Completed</span> : null}
+                <span aria-hidden="true">{step.title}</span>
               </li>
             ))}
           </ol>
