@@ -11,8 +11,18 @@ import {
   vi,
 } from "vitest";
 
+import { createShadcn } from "../src/baseui";
+import { baseComponents } from "./components";
 import {
-  Array as ShadcnArray,
+  arrayField,
+  objectField,
+  scalar,
+  unsupportedField,
+} from "./fixtures";
+
+const { slots } = createShadcn(baseComponents).adapter;
+const {
+  Array: ShadcnArray,
   ArrayItem,
   Button,
   ErrorSummary,
@@ -22,13 +32,7 @@ import {
   Group,
   Unsupported,
   Wizard,
-} from "../src";
-import {
-  arrayField,
-  objectField,
-  scalar,
-  unsupportedField,
-} from "./fixtures";
+} = slots;
 
 describe("shadcn slots", () => {
   test("renders hidden fields without a visible wrapper", () => {
@@ -93,7 +97,7 @@ describe("shadcn slots", () => {
     expect(screen.getByText("Array child")).toBeVisible();
     expect(screen.getByLabelText("Name")).toHaveAttribute("type", "checkbox");
     expect(screen.getByText("Modes").previousSibling).toHaveAttribute(
-      "data-slot",
+      "data-ui",
       "field-label",
     );
   });
@@ -125,17 +129,16 @@ describe("shadcn slots", () => {
 
     const form = screen.getByRole("form", { name: "Profile form" });
     expect(form).toHaveAttribute("data-slot", "form");
-    expect(form).toHaveClass("custom-form", "grid", "w-full");
+    expect(form).toHaveClass("custom-form");
 
     const group = screen.getByRole("group", { name: /Profile/u });
-    expect(group).toHaveAttribute("data-slot", "field-set");
+    expect(group).toHaveAttribute("data-ui", "field-set");
     const groupDescription = screen.getByText("Tell us who you are.");
     expect(group).toHaveAttribute("aria-describedby", groupDescription.id);
 
     const fieldError = screen.getByText("Enter your name");
     expect(fieldError).toHaveAttribute("role", "alert");
-    expect(fieldError).toHaveAttribute("data-slot", "field-error");
-    expect(fieldError).toHaveClass("text-destructive");
+    expect(fieldError).toHaveAttribute("data-ui", "field-error");
     expect(screen.getByText("Checking…")).toHaveRole("status");
     expect(screen.getByText("Publicly visible name.")).toHaveAttribute(
       "id",
@@ -177,7 +180,6 @@ describe("shadcn slots", () => {
     expect(group).toHaveAttribute("data-readonly", "true");
     expect(error).toHaveAttribute("id", "profile-error");
     expect(error).toHaveTextContent("Review this profile");
-    expect(error).toHaveClass("text-destructive");
   });
 
   test("renders array items, intent buttons, and aggregate errors", () => {
@@ -236,17 +238,15 @@ describe("shadcn slots", () => {
       "teammates-error",
     ]);
     expect(screen.getByRole("group", { name: "Item 1" })).toHaveAttribute(
-      "data-slot",
-      "card",
+      "data-ui",
+      "field",
     );
     expect(screen.getByRole("button", { name: "Add teammate" }))
       .toHaveAttribute("data-intent", "add");
-    expect(screen.getByRole("button", { name: "Add teammate" }))
-      .toHaveClass("border", "bg-background");
     expect(screen.getByRole("button", { name: "Move Item 1 up" }))
-      .toHaveClass("hover:bg-accent");
+      .toHaveAttribute("data-variant", "outline");
     expect(screen.getByRole("button", { name: "Remove Item 1" }))
-      .toHaveClass("text-destructive");
+      .toHaveAttribute("data-variant", "destructive");
     expect(screen.getByText("Add at least one teammate")).toHaveAttribute(
       "id",
       "teammates-error",
@@ -272,9 +272,9 @@ describe("shadcn slots", () => {
     const submit = screen.getByRole("button", { name: "Save profile" });
     expect(submit).toBeDisabled();
     expect(submit).toHaveAttribute("aria-busy", "true");
-    expect(submit.querySelector(".animate-spin")).toBeInTheDocument();
+    expect(submit.querySelector("[data-ui=spinner]")).toBeInTheDocument();
     expect(screen.getByText("Records need a custom control.").closest("[role=alert]"))
-      .toHaveClass("bg-muted/50", "text-foreground");
+      .toHaveAttribute("data-ui", "alert");
     expect(screen.getByText("Server failed").closest("[role=alert]"))
       .toBeInTheDocument();
     expect(screen.getByText("Draft saved").closest("[role=status]"))
@@ -310,12 +310,9 @@ describe("shadcn slots", () => {
 
     const alert = screen.getByText("Fix these fields").closest("[role=alert]");
     const fieldErrorLink = screen.getByRole("button", { name: "Enter a name" });
-    expect(alert).toHaveAttribute("data-slot", "alert");
-    expect(alert).toHaveClass("bg-card", "text-destructive");
-    expect(fieldErrorLink).not.toHaveClass("bg-destructive");
-    expect(fieldErrorLink.className).not.toMatch(
-      /(?:^|\s)text-card(?:\s|$)/u,
-    );
+    expect(alert).toHaveAttribute("data-ui", "alert");
+    expect(alert).toHaveAttribute("data-variant", "destructive");
+    expect(fieldErrorLink).toHaveAttribute("data-variant", "link");
     fireEvent.click(fieldErrorLink);
     expect(onSelect).toHaveBeenCalledWith("profile.name");
     expect(screen.getByText("Try again later")).not.toHaveRole("button");
@@ -391,28 +388,8 @@ describe("shadcn slots", () => {
     expect(screen.getByRole("navigation", { name: "Wizard navigation" }))
       .toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Back" }))
-      .toHaveClass("hover:bg-accent");
+      .toHaveAttribute("data-variant", "outline");
     expect(screen.getByRole("button", { name: "Next" }))
-      .toHaveClass("bg-primary");
-  });
-
-  test("uses semantic design tokens instead of fixed palette utilities", () => {
-    render(
-      <>
-        <FormMessage kind="error" message="Bad request" />
-        <FormMessage kind="success" message="Saved profile" />
-        <ErrorSummary errors={["Name is required"]} title="Fix it" />
-        <Button disabled={false} intent="remove" type="button">Remove</Button>
-        <Unsupported field={unsupportedField()} reason="Unsupported" />
-      </>,
-    );
-
-    const classNames = [...document.querySelectorAll<HTMLElement>("[class]")]
-      .map((element) => element.className)
-      .join(" ");
-    expect(classNames).toMatch(/(?:destructive|primary|card|foreground)/u);
-    expect(classNames).not.toMatch(
-      /(?:^|\s)(?:red|green|blue|yellow|orange|amber|zinc|slate|gray|neutral|stone)-\d{2,3}(?:\/\d+)?(?:\s|$)/u,
-    );
+      .toHaveAttribute("data-variant", "default");
   });
 });

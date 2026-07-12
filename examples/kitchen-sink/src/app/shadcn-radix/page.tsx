@@ -11,10 +11,10 @@ const Contact = createForm(z.object({
   fields: { message: { control: "textarea" } },
 });
 
-export default function ShadcnExample(): React.JSX.Element {
+export default function ShadcnRadixExample(): React.JSX.Element {
   return (
     <>
-      <h1>shadcn/ui with Base UI</h1>
+      <h1>shadcn/ui with Radix UI</h1>
       <Contact.Form />
     </>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { ShadcnProvider } from "@formadapter/shadcn";
+import { ShadcnProvider } from "@/lib/shadcn";
 
 export default function ShadcnLayout({
   children,

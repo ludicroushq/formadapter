@@ -16,44 +16,21 @@ import {
   changedInputValue,
   inputType,
   inputValue,
-  nativeControlProps,
   optionForValue,
   selectedOptionValue,
   serializedOptionValue,
 } from "@formadapter/html/native";
 import type { ControlProps } from "@formadapter/react";
 
-import {
-  Checkbox,
-  File as FileControl,
-  Input,
-  Radio,
-  Select,
-  Textarea,
-} from "../src";
-import { cn } from "../src/cn";
+import { createShadcn as createBaseUIShadcn } from "../src/baseui";
+import { createShadcn as createRadixShadcn } from "../src/radix";
+import { baseComponents, radixComponents } from "./components";
 import {
   controlProps,
   scalar,
 } from "./fixtures";
 
 describe("shadcn control helpers", () => {
-  test("merges Tailwind utilities while preserving ordinary classes", () => {
-    expect(cn("h-9 w-full", false, undefined, "h-12 custom-input"))
-      .toBe("w-full h-12 custom-input");
-    expect(cn(null, false, undefined)).toBe("");
-
-    const hostileProps = nativeControlProps<Record<string, unknown>>(scalar({
-      config: {
-        controlProps: JSON.parse(
-          '{"__proto__":{"formadapterPolluted":true},"constructor":"ignored","data-safe":"kept"}',
-        ) as Readonly<Record<string, unknown>>,
-      },
-    }));
-    expect(hostileProps.props).toEqual({ "data-safe": "kept" });
-    expect(Object.prototype).not.toHaveProperty("formadapterPolluted");
-  });
-
   test("reuses the canonical native input and option codecs", () => {
     expect(inputType(scalar({ control: "email" }))).toBe("email");
     expect(
@@ -88,6 +65,17 @@ describe("shadcn control helpers", () => {
     expect(selectedOptionValue(options, undefined)).toBe("");
   });
 });
+
+const baseAdapter = createBaseUIShadcn(baseComponents).adapter;
+const radixAdapter = createRadixShadcn(radixComponents).adapter;
+const Checkbox = baseAdapter.controls.checkbox;
+const FileControl = baseAdapter.controls.file;
+const Input = baseAdapter.controls.input;
+const Radio = baseAdapter.controls.radio;
+const Select = baseAdapter.controls.select;
+const Textarea = baseAdapter.controls.textarea;
+const RadixCheckbox = radixAdapter.controls.checkbox;
+const RadixRadio = radixAdapter.controls.radio;
 
 describe("shadcn controls", () => {
   test("renders constrained inputs and lets consumer utilities override defaults", () => {
@@ -132,7 +120,7 @@ describe("shadcn controls", () => {
     );
 
     const input = screen.getByTestId("number-control");
-    expect(input).toHaveAttribute("data-slot", "input");
+    expect(input).toHaveAttribute("data-ui", "input");
     expect(input).toHaveAttribute("id", "seat-count");
     expect(input).toHaveAttribute("name", "seats");
     expect(input).toHaveAttribute("min", "1");
@@ -141,7 +129,6 @@ describe("shadcn controls", () => {
     expect(input).toHaveAttribute("aria-describedby", "seat-help");
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(input).toHaveClass("h-12", "custom-input");
-    expect(input).not.toHaveClass("h-9");
     expect((input as HTMLElement).style.maxWidth).toBe("24rem");
 
     fireEvent.change(input, { target: { value: "3.5" } });
@@ -172,7 +159,6 @@ describe("shadcn controls", () => {
     const range = screen.getByLabelText("Range");
     expect(range).toHaveAttribute("type", "range");
     expect(range).toBeDisabled();
-    expect(range.className).toContain("accent-primary");
     fireEvent.change(range, { target: { value: "10" } });
     expect(onValueChange).not.toHaveBeenCalled();
 
@@ -209,9 +195,8 @@ describe("shadcn controls", () => {
     );
 
     const textarea = screen.getByRole("textbox");
-    expect(textarea).toHaveAttribute("data-slot", "textarea");
+    expect(textarea).toHaveAttribute("data-ui", "textarea");
     expect(textarea).toHaveClass("min-h-32");
-    expect(textarea).not.toHaveClass("min-h-16");
     expect(textarea).toHaveAttribute("rows", "6");
     expect(textarea).toHaveAttribute("minlength", "10");
     expect(textarea).toHaveAttribute("maxlength", "200");
@@ -250,9 +235,8 @@ describe("shadcn controls", () => {
     );
 
     const select = screen.getByRole("combobox");
-    expect(select).toHaveAttribute("data-slot", "native-select");
+    expect(select).toHaveAttribute("data-ui", "native-select");
     expect(select).toHaveClass("h-12");
-    expect(select).not.toHaveClass("h-9");
     expect(screen.getByRole("option", { name: "Choose a plan" })).toBeEnabled();
 
     const team = screen.getByRole<HTMLOptionElement>("option", {
@@ -334,10 +318,9 @@ describe("shadcn controls", () => {
     const starter = screen.getByRole("radio", { name: "Starter" });
     const team = screen.getByRole("radio", { name: "Team" });
     const group = screen.getByRole("radiogroup", { name: "Plan" });
-    expect(group).toHaveAttribute("data-slot", "radio-group");
+    expect(group).toHaveAttribute("data-ui", "base-radio-group");
     expect(group).toHaveAttribute("aria-invalid", "true");
     expect(starter).toBeChecked();
-    expect(starter).toHaveAttribute("data-invalid", "true");
     fireEvent.click(team);
     expect(onValueChange).toHaveBeenCalledWith("team");
 
@@ -380,7 +363,7 @@ describe("shadcn controls", () => {
     const { rerender } = render(<Checkbox {...props} />);
 
     const checkbox = screen.getByRole("checkbox", { name: "Accept terms" });
-    expect(checkbox).toHaveAttribute("data-slot", "checkbox");
+    expect(checkbox).toHaveAttribute("data-ui", "base-checkbox");
     expect(checkbox).toBeRequired();
     expect(checkbox).toHaveAttribute("aria-invalid", "true");
     fireEvent.click(checkbox);
@@ -411,6 +394,62 @@ describe("shadcn controls", () => {
       .not.toBeRequired();
   });
 
+  test("connects Radix checkbox and radio events through their button refs", () => {
+    const checkboxChange = vi.fn<(value: unknown) => void>();
+    const checkboxField = scalar({
+      control: "checkbox",
+      dataType: "boolean",
+      label: "Radix terms",
+      source: { const: true, type: "boolean" },
+    });
+    const { rerender } = render(
+      <RadixCheckbox
+        {...controlProps(checkboxField, {
+          inputProps: { "aria-label": "Radix terms" },
+          onValueChange: checkboxChange,
+          value: false,
+        })}
+      />,
+    );
+
+    const checkbox = screen.getByRole("checkbox", { name: "Radix terms" });
+    expect(checkbox).toHaveAttribute("data-ui", "radix-checkbox");
+    fireEvent.click(checkbox);
+    expect(checkboxChange).toHaveBeenCalledWith(true);
+
+    checkboxChange.mockClear();
+    rerender(
+      <RadixCheckbox
+        {...controlProps(checkboxField, {
+          inputProps: { "aria-label": "Radix terms" },
+          onValueChange: checkboxChange,
+          readOnly: true,
+        })}
+      />,
+    );
+    expect(checkbox).toBeDisabled();
+
+    const radioChange = vi.fn<(value: unknown) => void>();
+    const radioField = scalar({
+      control: "radio",
+      label: "Radix plan",
+      options: [
+        { label: "Starter", value: 1 },
+        { label: "Team", value: 2 },
+      ],
+    });
+    rerender(
+      <RadixRadio
+        {...controlProps(radioField, {
+          onValueChange: radioChange,
+          value: 1,
+        })}
+      />,
+    );
+    fireEvent.click(screen.getByRole("radio", { name: "Team" }));
+    expect(radioChange).toHaveBeenCalledWith(2);
+  });
+
   test("emits one file or a file array according to schema configuration", () => {
     const onValueChange = vi.fn<(value: unknown) => void>();
     const singleField = scalar({
@@ -434,7 +473,7 @@ describe("shadcn controls", () => {
     );
     const input = screen.getByLabelText("Attachment");
 
-    expect(input).toHaveAttribute("data-slot", "input");
+    expect(input).toHaveAttribute("data-ui", "input");
     expect(input).toHaveAttribute("accept", "image/png");
     expect(input).toHaveAttribute("aria-invalid", "true");
     fireEvent.change(input, { target: { files: [first] } });

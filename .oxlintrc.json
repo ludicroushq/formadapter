@@ -16,6 +16,8 @@
     "**/.turbo/**",
     "**/dist/**",
     "coverage/**",
+    "examples/kitchen-sink/src/components/radix-ui/**",
+    "examples/kitchen-sink/src/components/ui/**",
     "node_modules/**"
   ]
 }

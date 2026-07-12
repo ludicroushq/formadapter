@@ -6,7 +6,7 @@ icon: Braces
 
 FormAdapter turns a schema into a typed React form without turning the schema into a second configuration language.
 
-It reads structure through [Standard JSON Schema](https://standardschema.dev/json-schema), validates with the original [Standard Schema](https://standardschema.dev), and delegates every visible element to a UI adapter. Zod 4 and ArkType 2 work today. Accessible native HTML, DaisyUI 5, and shadcn/ui adapters are included; custom systems can extend the same complete base.
+It reads structure through [Standard JSON Schema](https://standardschema.dev/json-schema), validates with the original [Standard Schema](https://standardschema.dev), and delegates every visible element to a UI adapter. Zod 4 and ArkType 2 work today. Accessible native HTML and DaisyUI 5 adapters are included, plus typed connectors for your source-owned shadcn/ui components.
 
 ```text
 Zod or ArkType → form model → React runtime → HTML, DaisyUI, shadcn/ui, or your adapter
@@ -30,7 +30,7 @@ That separation keeps ordinary form code small without making complex forms a de
 ## What is included
 
 - Provider-scoped adapters with nearest-provider replacement
-- Complete unstyled HTML, DaisyUI, and shadcn/ui adapters
+- Complete unstyled HTML and DaisyUI adapters, plus Base UI and Radix shadcn connectors
 - Typed field paths, predicates, option values, and async validators
 - Automatic and composed layouts
 - Conditional fields and conditional requiredness

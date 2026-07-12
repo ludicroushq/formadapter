@@ -92,8 +92,8 @@ Adapter resolution is deterministic:
 1. A complete `adapter` passed to one form.
 2. The nearest `FormAdapterProvider`.
 3. The adapter bound by an adapter-specific factory such as
-   `@formadapter/html`, `@formadapter/daisyui`, or
-   `@formadapter/shadcn`'s `createForm`.
+   `@formadapter/html`, `@formadapter/daisyui`, or the `createForm` returned by
+   `createShadcn(...)`.
 
 A child provider replaces its parent adapter for that subtree; adapters are
 never implicitly merged across scopes. Build an intentional partial variation
@@ -357,7 +357,7 @@ for ordinary browser submission where possible.
 | `@formadapter/react` | Typed React state, schema-bound components/hooks, provider scopes, renderer, drafts, wizards, and adapter contract |
 | `@formadapter/html` | Accessible, unstyled native HTML adapter and custom-design-system foundation |
 | `@formadapter/daisyui` | Complete DaisyUI 5 adapter using accessible native HTML controls |
-| `@formadapter/shadcn` | Complete shadcn/ui-styled adapter using accessible native HTML controls |
+| `@formadapter/shadcn` | Typed Base UI and Radix connectors for source-owned shadcn/ui components |
 | `@formadapter/server` | Schema-aware FormData/JSON validation, business errors, reusable submissions, Server Actions, and Request handlers |
 | `@formadapter/nextjs` | Next.js-focused aliases for native React Server Actions |
 | `@formadapter/tanstack-start` | TanStack Start client hook and server-function boundary helpers |
@@ -404,22 +404,28 @@ React component-wrapper dependency. The package also exports an adapter-bound
 
 ## shadcn/ui setup
 
-Use the theme created by `shadcn init` and import the adapter's Tailwind source
-file:
+Generate the components FormAdapter needs, then pass those exact components to
+the connector for your shadcn primitive library:
 
 ```sh
 bun add @formadapter/react @formadapter/shadcn zod
+bunx shadcn@latest add alert button checkbox field input native-select progress radio-group spinner textarea
 ```
 
-```css
-@import "tailwindcss";
-@import "@formadapter/shadcn";
+```tsx
+import { createShadcn } from "@formadapter/shadcn/baseui";
+// Radix UI: import { createShadcn } from "@formadapter/shadcn/radix";
+import { components } from "./shadcn-components";
+
+export const shadcn = createShadcn(components);
+export const ShadcnProvider = shadcn.Provider;
 ```
 
-`ShadcnProvider` applies the adapter once for a subtree. The adapter uses the
-application's existing shadcn/ui semantic tokens without copying or replacing
-anything in `components/ui`. An adapter-bound `createForm` is also exported for
-isolated forms.
+The component bundle contains the generated Alert, Button, Checkbox, Field,
+Input, Native Select, Progress, Radio Group, Spinner, and Textarea exports. The
+returned setup provides `Provider`, `adapter`, and an adapter-bound `createForm`.
+There is no FormAdapter CSS import: your generated components, custom variants,
+and existing theme remain the styling source.
 
 ## Current boundaries
 
