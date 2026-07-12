@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
     "@formadapter/core",
     "@formadapter/react",
     "@formadapter/html",
-    "@formadapter/daisyui"
+    "@formadapter/daisyui",
+    "@formadapter/shadcn"
   ]
 };
 

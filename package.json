@@ -24,7 +24,7 @@
     "dev:example": "turbo run build --filter=@formadapter/example-kitchen-sink^... && turbo run dev --filter=@formadapter/example-kitchen-sink...",
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
-    "preview:publish": "pkg-pr-new publish --comment=update --packageManager=bun './packages/core' './packages/react' './packages/html' './packages/daisyui' './packages/server' './packages/nextjs' './packages/tanstack-start' './packages/orpc' './packages/http'",
+    "preview:publish": "pkg-pr-new publish --comment=update --packageManager=bun './packages/core' './packages/react' './packages/html' './packages/daisyui' './packages/shadcn' './packages/server' './packages/nextjs' './packages/tanstack-start' './packages/orpc' './packages/http'",
     "release": "bun run build && bun tooling/package-artifacts.ts && changeset publish",
     "test": "turbo run test",
     "test:coverage": "vitest run --coverage",

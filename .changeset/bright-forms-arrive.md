@@ -1,13 +1,13 @@
 ---
-"@formadapter/core": minor
-"@formadapter/react": minor
-"@formadapter/html": minor
-"@formadapter/daisyui": minor
-"@formadapter/server": minor
-"@formadapter/nextjs": minor
-"@formadapter/tanstack-start": minor
-"@formadapter/orpc": minor
-"@formadapter/http": minor
+"@formadapter/core": patch
+"@formadapter/react": patch
+"@formadapter/html": patch
+"@formadapter/daisyui": patch
+"@formadapter/server": patch
+"@formadapter/nextjs": patch
+"@formadapter/tanstack-start": patch
+"@formadapter/orpc": patch
+"@formadapter/http": patch
 ---
 
 Introduce the Standard Schema compiler, typed provider-scoped React runtime,

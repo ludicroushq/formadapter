@@ -3,6 +3,7 @@
   "pages": [
     "html",
     "daisyui",
+    "shadcn",
     "adapters",
     "custom-design-systems"
   ]

@@ -292,9 +292,84 @@ body {
   translate: 0 -1px;
 }
 
+.install-configurator {
+  width: min(100%, 35rem);
+  margin-top: 1rem;
+}
+
+.install-selectors {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.install-selector {
+  min-width: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.install-mini-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  border: 1px solid var(--fa-border);
+  border-radius: 0.55rem;
+  background: var(--fa-surface);
+  padding: 0.18rem;
+}
+
+.install-mini-tabs label {
+  display: block;
+  cursor: pointer;
+}
+
+.install-mini-tabs span {
+  display: flex;
+  min-height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 0.38rem;
+  color: var(--fa-muted);
+  padding: 0.28rem 0.48rem;
+  font-size: 0.66rem;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+
+.install-mini-tabs input:checked + span {
+  border-color: rgb(214 217 224 / 85%);
+  background: white;
+  color: var(--fa-text);
+  box-shadow: 0 1px 3px rgb(23 24 28 / 10%);
+  font-weight: 750;
+}
+
+.install-mini-tabs label:hover span {
+  color: var(--fa-text);
+}
+
+.install-mini-tabs input:focus-visible + span {
+  outline: 2px solid var(--fa-primary);
+  outline-offset: 1px;
+}
+
+.install-selector:disabled {
+  opacity: 0.65;
+}
+
+.install-selector:disabled label {
+  cursor: wait;
+}
+
 .install-command {
   display: grid;
-  width: min(100%, 35rem);
+  width: 100%;
   min-height: 2.85rem;
   align-items: center;
   overflow: hidden;
@@ -302,7 +377,7 @@ body {
   border-radius: 0.65rem;
   background: var(--fa-surface);
   grid-template-columns: auto minmax(0, 1fr) auto;
-  margin-top: 1rem;
+  margin-top: 0.55rem;
 }
 
 .install-prompt {
@@ -912,6 +987,14 @@ body {
 
   .install-command code {
     font-size: 0.61rem;
+  }
+
+  .install-selectors {
+    gap: 0.4rem;
+  }
+
+  .install-mini-tabs span {
+    padding-inline: 0.42rem;
   }
 
   .hero-example-toolbar {

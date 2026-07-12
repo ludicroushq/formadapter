@@ -27,13 +27,14 @@ export const metadata: Metadata = {
     template: "%s — FormAdapter",
   },
   description:
-    "Turn Zod or ArkType schemas into typed React forms rendered through DaisyUI or your own design system.",
+    "Turn Zod or ArkType schemas into typed React forms rendered through DaisyUI, shadcn/ui, or your own design system.",
   keywords: [
     "React forms",
     "Zod forms",
     "ArkType forms",
     "Standard Schema",
     "DaisyUI",
+    "shadcn/ui",
     "Next.js Server Actions",
   ],
   openGraph: {

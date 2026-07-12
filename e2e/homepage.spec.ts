@@ -11,6 +11,60 @@ test("the hero responds, validates with prefixed styles, and returns typed outpu
     scrollY: window.scrollY,
   }))).toEqual({ activeElement: "BODY", scrollY: 0 });
 
+  const command = page.locator(".install-command code");
+  const copyButton = page.getByRole("button", { name: "Copy install command" });
+  const packageManager = page.getByRole("group", { name: "Package manager" });
+  const framework = page.getByRole("group", { name: "Framework" });
+  const ui = page.getByRole("group", { name: "UI" });
+
+  await expect(packageManager.getByRole("radio", { name: "bun" }))
+    .toBeChecked();
+  await expect(framework.getByRole("radio", { name: "React" })).toBeChecked();
+  await expect(ui.getByRole("radio", { name: "DaisyUI" })).toBeChecked();
+  await expect(command).toHaveText(
+    "bun add @formadapter/react @formadapter/daisyui zod daisyui",
+  );
+
+  const packageCommands = {
+    npm: "npm install",
+    pnpm: "pnpm add",
+    yarn: "yarn add",
+    bun: "bun add",
+  } as const;
+  for (const [name, prefix] of Object.entries(packageCommands)) {
+    await packageManager.getByText(name, { exact: true }).click();
+    await expect(packageManager.getByRole("radio", { name, exact: true }))
+      .toBeChecked();
+    await expect(command).toHaveText(
+      `${prefix} @formadapter/react @formadapter/daisyui zod daisyui`,
+    );
+  }
+
+  await packageManager.getByRole("radio", { name: "npm", exact: true })
+    .focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(packageManager.getByRole("radio", { name: "pnpm" }))
+    .toBeChecked();
+  await expect(command).toHaveText(
+    "pnpm add @formadapter/react @formadapter/daisyui zod daisyui",
+  );
+
+  await copyButton.click();
+  await expect(copyButton).toHaveText(/Copied|Selected/u);
+
+  await ui.getByText("shadcn", { exact: true }).click();
+  await expect(copyButton).toHaveText("Copy");
+  await expect(command).toHaveText(
+    "pnpm add @formadapter/react @formadapter/shadcn zod",
+  );
+  await ui.getByText("Bring your own", { exact: true }).click();
+  await expect(command).toHaveText(
+    "pnpm add @formadapter/react @formadapter/html zod",
+  );
+
+  await packageManager.getByText("bun", { exact: true }).click();
+  await ui.getByText("DaisyUI", { exact: true }).click();
+
   const heroCard = page.locator(".hero-example");
   const initialBox = await heroCard.boundingBox();
   expect(initialBox).not.toBeNull();

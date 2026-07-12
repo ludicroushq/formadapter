@@ -77,6 +77,68 @@ test("the native HTML adapter validates without design-system setup", async ({
   await expect(email).not.toHaveAttribute("aria-invalid", "true");
 });
 
+for (const [name, route] of [
+  ["Base UI", "/shadcn"],
+  ["Radix UI", "/shadcn-radix"],
+] as const) {
+  test(`the ${name} shadcn connector renders source-owned components`, async ({
+    page,
+  }) => {
+    await page.goto(`${exampleUrl}${route}`);
+
+    const email = page.getByRole("textbox", { name: "Email" });
+    const message = page.getByRole("textbox", { name: "Message" });
+    const team = page.getByRole("radio", { name: /team/iu });
+    const terms = page.getByRole("checkbox", { name: "Accept terms" });
+    await expect(email).not.toHaveClass(/(?:^|\s)input(?:\s|$)/u);
+    await expect(team).not.toBeChecked();
+    await expect(terms).not.toBeChecked();
+
+    const initialStyle = await email.evaluate((element) => ({
+      borderColor: getComputedStyle(element).borderTopColor,
+      borderRadius: getComputedStyle(element).borderRadius,
+    }));
+    expect(Number.parseFloat(initialStyle.borderRadius)).toBeGreaterThan(0);
+
+    const lightBackground = await page.locator("body").evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    await page.locator("html").evaluate((element) => {
+      element.classList.add("dark");
+    });
+    const darkTheme = await email.evaluate((element) => ({
+      background: getComputedStyle(document.body).backgroundColor,
+      color: getComputedStyle(element).color,
+    }));
+    expect(darkTheme.background).not.toBe(lightBackground);
+    expect(darkTheme.color).not.toBe(darkTheme.background);
+    await page.locator("html").evaluate((element) => {
+      element.classList.remove("dark");
+    });
+
+    await page.getByRole("button", { name: "Submit" }).click();
+    await expect(email).toBeFocused();
+    await expect(email).toHaveAttribute("aria-invalid", "true");
+    await expect(page.getByText("Enter a valid email", { exact: true }).last())
+      .toBeVisible();
+
+    const invalidBorderColor = await email.evaluate(
+      (element) => getComputedStyle(element).borderTopColor,
+    );
+    expect(invalidBorderColor).not.toBe(initialStyle.borderColor);
+
+    await team.click();
+    await terms.click();
+    await expect(team).toBeChecked();
+    await expect(terms).toBeChecked();
+
+    await email.fill("ada@example.com");
+    await message.fill("A complete generated component test");
+    await page.getByRole("button", { name: "Submit" }).click();
+    await expect(email).not.toHaveAttribute("aria-invalid", "true");
+  });
+}
+
 test("the Next.js Server Action reports pending, routes errors, and succeeds", async ({
   page,
 }) => {

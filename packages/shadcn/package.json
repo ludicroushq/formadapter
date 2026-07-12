@@ -1,0 +1,78 @@
+{
+  "name": "@formadapter/shadcn",
+  "version": "0.0.0",
+  "description": "Typed Base UI and Radix bridges from FormAdapter to your shadcn/ui components.",
+  "keywords": [
+    "forms",
+    "react",
+    "schema",
+    "shadcn",
+    "tailwindcss",
+    "typescript"
+  ],
+  "homepage": "https://formadapter.com",
+  "bugs": {
+    "url": "https://github.com/ludicroushq/formadapter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ludicroushq/formadapter.git",
+    "directory": "packages/shadcn"
+  },
+  "license": "MIT",
+  "author": "ludicrous",
+  "type": "module",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./baseui": {
+      "types": "./dist/baseui.d.ts",
+      "import": "./dist/baseui.js",
+      "default": "./dist/baseui.js"
+    },
+    "./radix": {
+      "types": "./dist/radix.d.ts",
+      "import": "./dist/radix.js",
+      "default": "./dist/radix.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@formadapter/html": "^0.0.0",
+    "@formadapter/react": "^0.0.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@formadapter/core": "^0.0.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "zod": "4.4.3"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo .turbo",
+    "dev": "tsdown --watch",
+    "test": "vitest run --config vitest.config.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  }
+}

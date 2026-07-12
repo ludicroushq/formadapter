@@ -87,8 +87,8 @@ export default async function HomePage(): Promise<React.JSX.Element> {
               <h1>Build typed forms from the schemas you already have.</h1>
               <p className="hero-lede">
                 FormAdapter turns your schema into a React form, keeps the
-                original validation authoritative, and renders through DaisyUI
-                or your own design system.
+                original validation authoritative, and renders through DaisyUI,
+                shadcn/ui, or your own design system.
               </p>
               <div className="hero-actions">
                 <Link className="button-primary" href="/docs/getting-started">
@@ -100,7 +100,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
               </div>
               <InstallCommand />
               <p className="hero-note">
-                React 19 · DaisyUI 5 · Next.js and TanStack Start · MIT licensed
+                React 19 · DaisyUI 5 + shadcn/ui · Next.js and TanStack Start
               </p>
             </div>
 
@@ -131,7 +131,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
               <span>03</span>
               <div>
                 <strong>Render</strong>
-                <small>DaisyUI or yours</small>
+                <small>DaisyUI or shadcn</small>
               </div>
             </li>
             <li>
@@ -169,8 +169,8 @@ export default async function HomePage(): Promise<React.JSX.Element> {
                 <span className="benefit-icon"><Layers aria-hidden="true" /></span>
                 <h3>Set the UI once</h3>
                 <p>
-                  Mount a DaisyUI provider at the root, extend it, or replace it
-                  with a complete adapter for your own design system.
+                  Mount a DaisyUI or shadcn/ui provider at the root, extend it,
+                  or replace it with your own complete adapter.
                 </p>
                 <Link href="/docs/ui/adapters">Adapter scopes →</Link>
               </article>
@@ -215,7 +215,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
           <div className="landing-container final-cta-inner">
             <div>
               <h2>Bring a schema. Ship the form.</h2>
-              <p>Start with DaisyUI today. Replace the UI when you need to.</p>
+              <p>Start with DaisyUI or shadcn/ui. Replace the UI when you need to.</p>
             </div>
             <div>
               <Link className="button-primary" href="/docs/getting-started">
